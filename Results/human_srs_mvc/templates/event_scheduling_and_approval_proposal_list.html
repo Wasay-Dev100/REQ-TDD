@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Proposals</title>
+</head>
+<body>
+    <h1>Event Proposals</h1>
+    <ul>
+        {% for proposal in proposals %}
+            <li><a href="/event-proposals/{{ proposal.id }}">{{ proposal.title }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

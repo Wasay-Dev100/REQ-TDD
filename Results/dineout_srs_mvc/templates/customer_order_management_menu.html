@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Menu</title>
+</head>
+<body>
+  <h1>Menu</h1>
+
+  <div>
+    <h2>Categories</h2>
+    <ul>
+      {% for c in categories %}
+        <li>{{ c.name }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div>
+    <h2>Products</h2>
+    <ul>
+      {% for p in products %}
+        <li>{{ p.name }} - {{ p.price_cents }} {{ p.currency }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+</head>
+<body>
+    <h1>{{ user_dict.full_name }}'s Profile</h1>
+    <p>Email: {{ user_dict.email }}</p>
+    <p>Username: {{ user_dict.username }}</p>
+    <p>Role: {{ user_dict.role }}</p>
+    <p>Profile Badge: {{ user_dict.profile_badge }}</p>
+    <p>Student ID: {{ user_dict.student_id }}</p>
+    <p>Club Name: {{ user_dict.club_name }}</p>
+    <p>Department: {{ user_dict.department }}</p>
+    <p>Phone: {{ user_dict.phone }}</p>
+    <h2>Registered Events</h2>
+    <ul>
+        {% for item in registered_events %}
+            <li>{{ item.event.title }} - {{ item.registration_status }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

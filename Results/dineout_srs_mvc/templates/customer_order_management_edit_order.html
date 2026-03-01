@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Order</title>
+</head>
+<body>
+  <h1>Edit Order</h1>
+
+  {% if order %}
+    <div>Order #{{ order.id }} - status={{ order.status }}</div>
+  {% endif %}
+
+  <h2>Current Items</h2>
+  <ul>
+    {% for i in order_items %}
+      <li>product_id={{ i.product_id }} qty={{ i.quantity }}</li>
+    {% endfor %}
+  </ul>
+
+  <h2>Menu Products</h2>
+  <ul>
+    {% for p in menu_products %}
+      <li>{{ p.name }}</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>

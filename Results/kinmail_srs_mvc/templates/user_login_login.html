@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+    {% if error_message %}
+        <p style="color: red;">{{ error_message }}</p>
+    {% endif %}
+    <form action="{{ url_for('user_login_bp.login_post') }}" method="post">
+        <label for="identifier">Username or Email:</label>
+        <input type="text" name="identifier" id="identifier" value="{{ identifier or '' }}" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" required>
+        <br>
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ 'Edit' if mode == 'edit' else 'Create' }} Menu Item</title>
+</head>
+<body>
+    <h1>{{ 'Edit' if mode == 'edit' else 'Create' }} Menu Item</h1>
+    <form method="post">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="{{ menu_item.name if menu_item else '' }}">
+        <span>{{ errors.get('name') }}</span><br>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description">{{ menu_item.description if menu_item else '' }}</textarea><br>
+
+        <label for="price">Price:</label>
+        <input type="text" id="price" name="price" value="{{ menu_item.price if menu_item else '' }}">
+        <span>{{ errors.get('price') }}</span><br>
+
+        <button type="submit">{{ 'Update' if mode == 'edit' else 'Create' }}</button>
+    </form>
+</body>
+</html>

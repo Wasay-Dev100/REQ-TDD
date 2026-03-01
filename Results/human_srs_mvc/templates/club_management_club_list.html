@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Club List</title>
+</head>
+<body>
+    <h1>Clubs</h1>
+    <ul>
+        {% for club in clubs %}
+            <li><a href="{{ url_for('club_management.view_club', club_id=club.id) }}">{{ club.name }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

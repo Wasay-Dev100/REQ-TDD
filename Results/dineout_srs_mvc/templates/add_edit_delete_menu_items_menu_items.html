@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Menu Items</title>
+</head>
+<body>
+    <h1>Menu Items</h1>
+    <a href="{{ url_for('add_edit_delete_menu_items.new_menu_item_form') }}">Add New Menu Item</a>
+    <ul>
+        {% for item in menu_items %}
+            <li>
+                {{ item.name }} - ${{ item.price }}
+                <a href="{{ url_for('add_edit_delete_menu_items.edit_menu_item_form', menu_item_id=item.id) }}">Edit</a>
+                <form action="{{ url_for('add_edit_delete_menu_items.delete_menu_item', menu_item_id=item.id) }}" method="post" style="display:inline;">
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

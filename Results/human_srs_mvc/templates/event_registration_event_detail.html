@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Registration - Event Detail</title>
+</head>
+<body>
+    <h1>{{ event['title'] }}</h1>
+    <p>{{ event['description'] }}</p>
+    <p>Location: {{ event['location'] }}</p>
+    <p>Start: {{ event['start_at'] }}</p>
+    <p>End: {{ event['end_at'] }}</p>
+    <p>Capacity: {{ event['capacity'] }}</p>
+    <p>Remaining: {{ event['remaining_capacity'] }}</p>
+
+    {% if not event['is_registered'] %}
+        <form action="{{ url_for('event_registration_bp.register_for_event', event_id=event['id']) }}" method="post">
+            <button type="submit">Register</button>
+        </form>
+    {% else %}
+        <p>You are already registered for this event.</p>
+    {% endif %}
+
+    <h2>Comments</h2>
+    <ul>
+        {% for comment in comments %}
+            <li>
+                <p>{{ comment['content'] }}</p>
+                <p>Posted by User ID: {{ comment['user_id'] }} at {{ comment['created_at'] }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <form action="{{ url_for('event_registration_bp.post_comment', event_id=event['id']) }}" method="post">
+        <textarea name="content" placeholder="Add a comment"></textarea>
+        <button type="submit">Post Comment</button>
+    </form>
+</body>
+</html>

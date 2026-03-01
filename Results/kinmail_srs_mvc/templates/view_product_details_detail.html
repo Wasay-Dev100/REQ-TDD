@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+</head>
+<body>
+    <h1>{{ product.name }}</h1>
+    <p>SKU: {{ product.sku }}</p>
+    <p>Category: {{ product.category.name if product.category else 'N/A' }}</p>
+    <p>Seller: {{ product.seller.username }}</p>
+    <p>Short Description: {{ product.description.short }}</p>
+    <p>Full Description: {{ product.description.full }}</p>
+    <p>Price: {{ product.pricing.amount }} {{ product.pricing.currency }}</p>
+    <p>Stock Quantity: {{ product.availability.stock_quantity }}</p>
+    <p>Delivery Estimate: {{ product.delivery.estimate_days_min }} - {{ product.delivery.estimate_days_max }} days</p>
+    <p>Delivery Fee: {{ product.delivery.fee.amount }} {{ product.delivery.fee.currency }}</p>
+    <p>Warranty: {{ product.warranty.months }} months</p>
+    <p>Warranty Terms: {{ product.warranty.terms }}</p>
+</body>
+</html>

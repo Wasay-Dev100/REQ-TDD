@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+</head>
+<body>
+    <h1>{{ product_details.general.name }}</h1>
+    <p>SKU: {{ product_details.general.sku }}</p>
+    <p>Category: {{ product_details.general.category.name }}</p>
+    <p>Brand: {{ product_details.general.brand }}</p>
+    <p>Model Number: {{ product_details.general.model_number }}</p>
+    <p>Condition: {{ product_details.general.condition }}</p>
+    <p>Active: {{ product_details.general.is_active }}</p>
+
+    <h2>Seller Information</h2>
+    <p>Username: {{ product_details.seller.username }}</p>
+    <p>Email: {{ product_details.seller.email }}</p>
+
+    <h2>Description</h2>
+    <p>{{ product_details.description.short_description }}</p>
+    <p>{{ product_details.description.full_description }}</p>
+    <p>Weight: {{ product_details.description.weight_kg }} kg</p>
+    <p>Dimensions: {{ product_details.description.dimensions_cm }}</p>
+
+    <h2>Pricing</h2>
+    <p>Currency: {{ product_details.pricing.currency }}</p>
+    <p>List Price: {{ product_details.pricing.list_price }}</p>
+    <p>Sale Price: {{ product_details.pricing.sale_price }}</p>
+    <p>Effective Price: {{ product_details.pricing.effective_price }}</p>
+    <p>Stock Quantity: {{ product_details.pricing.stock_quantity }}</p>
+
+    <h2>Delivery</h2>
+    <p>Method: {{ product_details.delivery.method }}</p>
+    <p>Fee: {{ product_details.delivery.fee }}</p>
+    <p>Estimated Delivery: {{ product_details.delivery.estimated_min_days }} - {{ product_details.delivery.estimated_max_days }} days</p>
+    <p>Ships From: {{ product_details.delivery.ships_from }}</p>
+    <p>Return Policy: {{ product_details.delivery.return_policy }}</p>
+
+    <h2>Warranty</h2>
+    <p>Type: {{ product_details.warranty.type }}</p>
+    <p>Period: {{ product_details.warranty.period_months }} months</p>
+    <p>Details: {{ product_details.warranty.details }}</p>
+</body>
+</html>

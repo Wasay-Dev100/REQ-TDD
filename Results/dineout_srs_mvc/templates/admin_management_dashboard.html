@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+</head>
+<body>
+  <h1>Admin Dashboard</h1>
+
+  <h2>Staff</h2>
+  <ul>
+    {% for s in staff %}
+      <li>{{ s.username }} ({{ s.email }}) - {{ s.role }} - active={{ s.is_active }}</li>
+    {% endfor %}
+  </ul>
+
+  <h2>Menu Items</h2>
+  <ul>
+    {% for m in menu_items %}
+      <li>{{ m.name }} - {{ m.price }} - available={{ m.is_available }}</li>
+    {% endfor %}
+  </ul>
+
+  <h2>Inventory</h2>
+  <ul>
+    {% for i in inventory_items %}
+      <li>{{ i.sku }} - {{ i.name }} ({{ i.unit }}) qty={{ i.stock_quantity }}</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Requests</title>
+</head>
+<body>
+    <h1>Event Requests</h1>
+    <ul>
+        {% for event_request in event_requests %}
+        <li>
+            <a href="/events/requests/{{ event_request.id }}">{{ event_request.title }}</a>
+            - {{ event_request.status }}
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

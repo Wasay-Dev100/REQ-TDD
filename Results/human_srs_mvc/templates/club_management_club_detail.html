@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ club.name }}</title>
+</head>
+<body>
+    <h1>{{ club.name }}</h1>
+    <p>{{ club.description }}</p>
+    <h2>Contact Information</h2>
+    <p>Name: {{ club.contact_name }}</p>
+    <p>Email: {{ club.contact_email }}</p>
+    <p>Phone: {{ club.contact_phone }}</p>
+    <h2>Event Images</h2>
+    <ul>
+        {% for image in event_images %}
+            <li>{{ image.title }} - {{ image.event_date }}</li>
+        {% endfor %}
+    </ul>
+    {% if can_edit %}
+        <a href="{{ url_for('club_management.edit_club_form', club_id=club.id) }}">Edit Club</a>
+    {% endif %}
+</body>
+</html>

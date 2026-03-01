@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ 'Edit' if mode == 'edit' else 'Create' }} Inventory Item</title>
+</head>
+<body>
+    <h1>{{ 'Edit' if mode == 'edit' else 'Create' }} Inventory Item</h1>
+    <form method="post">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="{{ inventory_item.name if inventory_item else '' }}">
+        <span>{{ errors.get('name') }}</span><br>
+
+        <label for="unit">Unit:</label>
+        <input type="text" id="unit" name="unit" value="{{ inventory_item.unit if inventory_item else '' }}">
+        <span>{{ errors.get('unit') }}</span><br>
+
+        <label for="quantity">Quantity:</label>
+        <input type="text" id="quantity" name="quantity" value="{{ inventory_item.quantity if inventory_item else '' }}">
+        <span>{{ errors.get('quantity') }}</span><br>
+
+        <label for="reorder_level">Reorder Level:</label>
+        <input type="text" id="reorder_level" name="reorder_level" value="{{ inventory_item.reorder_level if inventory_item else '' }}">
+        <span>{{ errors.get('reorder_level') }}</span><br>
+
+        <button type="submit">{{ 'Update' if mode == 'edit' else 'Create' }}</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Product</title>
+</head>
+<body>
+    <h1>Add New Product</h1>
+    <form action="/products" method="post" enctype="multipart/form-data">
+        <div>
+            <label for="name">Product Name:</label>
+            <input type="text" id="name" name="name" value="{{ form_data.get('name', '') }}">
+            {% if errors.get('name') %}
+                <span>{{ errors['name'][0] }}</span>
+            {% endif %}
+        </div>
+        <div>
+            <label for="category_id">Category:</label>
+            <select id="category_id" name="category_id">
+                {% for category in categories %}
+                    <option value="{{ category.id }}" {% if form_data.get('category_id') == category.id %}selected{% endif %}>{{ category.name }}</option>
+                {% endfor %}
+            </select>
+            {% if errors.get('category_id') %}
+                <span>{{ errors['category_id'][0] }}</span>
+            {% endif %}
+        </div>
+        <div>
+            <label for="owner_name">Owner Name:</label>
+            <input type="text" id="owner_name" name="owner_name" value="{{ form_data.get('owner_name', '') }}">
+            {% if errors.get('owner_name') %}
+                <span>{{ errors['owner_name'][0] }}</span>
+            {% endif %}
+        </div>
+        <div>
+            <label for="description">Description:</label>
+            <textarea id="description" name="description">{{ form_data.get('description', '') }}</textarea>
+            {% if errors.get('description') %}
+                <span>{{ errors['description'][0] }}</span>
+            {% endif %}
+        </div>
+        <div>
+            <label for="price">Price:</label>
+            <input type="text" id="price" name="price" value="{{ form_data.get('price', '') }}">
+            {% if errors.get('price') %}
+                <span>{{ errors['price'][0] }}</span>
+            {% endif %}
+        </div>
+        <div>
+            <label for="currency">Currency:</label>
+            <select id="currency" name="currency">
+                <option value="USD" {% if form_data.get('currency') == 'USD' %}selected{% endif %}>USD</option>
+                <option value="EUR" {% if form_data.get('currency') == 'EUR' %}selected{% endif %}>EUR</option>
+                <option value="GBP" {% if form_data.get('currency') == 'GBP' %}selected{% endif %}>GBP</option>
+            </select>
+            {% if errors.get('currency') %}
+                <span>{{ errors['currency'][0] }}</span>
+            {% endif %}
+        </div>
+        <div>
+            <label for="condition">Condition:</label>
+            <select id="condition" name="condition">
+                <option value="new" {% if form_data.get('condition') == 'new' %}selected{% endif %}>New</option>
+                <option value="like_new" {% if form_data.get('condition') == 'like_new' %}selected{% endif %}>Like New</option>
+                <option value="good" {% if form_data.get('condition') == 'good' %}selected{% endif %}>Good</option>
+                <option value="fair" {% if form_data.get('condition') == 'fair' %}selected{% endif %}>Fair</option>
+                <option value="poor" {% if form_data.get('condition') == 'poor' %}selected{% endif %}>Poor</option>
+            </select>
+            {% if errors.get('condition') %}
+                <span>{{ errors['condition'][0] }}</span>
+            {% endif %}
+        </div>
+        <div>
+            <label for="warranty_months">Warranty Months:</label>
+            <input type="number" id="warranty_months" name="warranty_months" value="{{ form_data.get('warranty_months', 0) }}">
+            {% if errors.get('warranty_months') %}
+                <span>{{ errors['warranty_months'][0] }}</span>
+            {% endif %}
+        </div>
+        <div>
+            <label for="delivery_details">Delivery Details:</label>
+            <textarea id="delivery_details" name="delivery_details">{{ form_data.get('delivery_details', '') }}</textarea>
+            {% if errors.get('delivery_details') %}
+                <span>{{ errors['delivery_details'][0] }}</span>
+            {% endif %}
+        </div>
+        <div>
+            <label for="images">Product Images:</label>
+            <input type="file" id="images" name="images" multiple>
+            {% if errors.get('images') %}
+                <span>{{ errors['images'][0] }}</span>
+            {% endif %}
+        </div>
+        <button type="submit">Add Product</button>
+    </form>
+</body>
+</html>

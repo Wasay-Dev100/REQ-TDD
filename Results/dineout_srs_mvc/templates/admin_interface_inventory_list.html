@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventory List</title>
+</head>
+<body>
+    <h1>Inventory Items</h1>
+    <a href="{{ url_for('admin_interface.inventory_create') }}">Add New Inventory Item</a>
+    <ul>
+        {% for item in inventory_items %}
+            <li>{{ item.name }} ({{ item.quantity }} {{ item.unit }})
+                <a href="{{ url_for('admin_interface.inventory_update', inventory_item_id=item.id) }}">Edit</a>
+                <form action="{{ url_for('admin_interface.inventory_delete', inventory_item_id=item.id) }}" method="post" style="display:inline;">
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

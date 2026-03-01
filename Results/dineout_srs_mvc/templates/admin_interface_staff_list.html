@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Staff List</title>
+</head>
+<body>
+    <h1>Staff Members</h1>
+    <a href="{{ url_for('admin_interface.staff_create') }}">Add New Staff Member</a>
+    <ul>
+        {% for staff in staff_members %}
+            <li>{{ staff.full_name }} - {{ staff.position }}
+                <a href="{{ url_for('admin_interface.staff_update', staff_id=staff.id) }}">Edit</a>
+                <form action="{{ url_for('admin_interface.staff_delete', staff_id=staff.id) }}" method="post" style="display:inline;">
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

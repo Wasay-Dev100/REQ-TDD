@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Student Council Clubs Coordinator</title>
+</head>
+<body>
+    <h1>Manage Student Council Clubs Coordinator</h1>
+
+    {% if current_coordinator %}
+        <p>Current Coordinator: {{ current_coordinator.username }} ({{ current_coordinator.email }})</p>
+    {% else %}
+        <p>No current coordinator assigned.</p>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('changing_student_council_clubs_coordinator.update_student_council_clubs_coordinator') }}">
+        <label for="new_coordinator_user_id">Select New Coordinator:</label>
+        <select name="new_coordinator_user_id" required>
+            {% for user in all_users %}
+                <option value="{{ user.id }}">{{ user.username }} ({{ user.email }})</option>
+            {% endfor %}
+        </select>
+        {% if errors and errors.get('new_coordinator_user_id') %}
+            <div>{{ errors.get('new_coordinator_user_id') }}</div>
+        {% endif %}
+        <br>
+
+        <label for="new_coordinator_email">New Email (optional):</label>
+        <input type="email" name="new_coordinator_email">
+        {% if errors and errors.get('new_coordinator_email') %}
+            <div>{{ errors.get('new_coordinator_email') }}</div>
+        {% endif %}
+        <br>
+
+        <label for="new_coordinator_username">New Username (optional):</label>
+        <input type="text" name="new_coordinator_username" minlength="3" maxlength="80">
+        {% if errors and errors.get('new_coordinator_username') %}
+            <div>{{ errors.get('new_coordinator_username') }}</div>
+        {% endif %}
+        <br>
+
+        <button type="submit">Update Coordinator</button>
+    </form>
+</body>
+</html>

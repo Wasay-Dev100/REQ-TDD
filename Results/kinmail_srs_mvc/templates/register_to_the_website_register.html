@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+</head>
+<body>
+    <h1>Register</h1>
+    <form action="{{ url_for('register_to_the_website.register') }}" method="post" enctype="multipart/form-data">
+        {% for field, error in errors.items() %}
+            <p style="color: red;">{{ field }}: {{ error }}</p>
+        {% endfor %}
+        <input type="text" name="first_name" placeholder="First Name" value="{{ prefill.first_name if prefill else '' }}" required><br>
+        <input type="text" name="middle_name" placeholder="Middle Name" value="{{ prefill.middle_name if prefill else '' }}"><br>
+        <input type="text" name="last_name" placeholder="Last Name" value="{{ prefill.last_name if prefill else '' }}" required><br>
+        <select name="gender" required>
+            <option value="">Select Gender</option>
+            <option value="male" {% if prefill.gender == 'male' %}selected{% endif %}>Male</option>
+            <option value="female" {% if prefill.gender == 'female' %}selected{% endif %}>Female</option>
+            <option value="other" {% if prefill.gender == 'other' %}selected{% endif %}>Other</option>
+            <option value="prefer_not_to_say" {% if prefill.gender == 'prefer_not_to_say' %}selected{% endif %}>Prefer not to say</option>
+        </select><br>
+        <input type="file" name="profile_picture" required><br>
+        <input type="text" name="contact_number" placeholder="Contact Number" value="{{ prefill.contact_number if prefill else '' }}" required><br>
+        <input type="date" name="birthdate" value="{{ prefill.birthdate if prefill else '' }}" required><br>
+        <input type="text" name="username" placeholder="Username" value="{{ prefill.username if prefill else '' }}" required><br>
+        <input type="email" name="email" placeholder="Email" value="{{ prefill.email if prefill else '' }}" required><br>
+        <input type="password" name="password" placeholder="Password" required><br>
+        <button type="submit">Register</button>
+    </form>
+</body>
+</html>

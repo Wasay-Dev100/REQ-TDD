@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Free Tables</title>
+</head>
+<body>
+    <h1>Free Tables</h1>
+    <ul id="free-tables-list">
+        <!-- Free tables will be listed here -->
+    </ul>
+    <script>
+        fetch('/manager/tables/free')
+            .then(response => response.json())
+            .then(data => {
+                const list = document.getElementById('free-tables-list');
+                data.forEach(table => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `Table ${table.table_number} is ${table.status}`;
+                    list.appendChild(listItem);
+                });
+            });
+    </script>
+</body>
+</html>

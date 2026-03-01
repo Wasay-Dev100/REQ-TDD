@@ -1,0 +1,638 @@
+You are a Python developer. Generate complete, production-ready MVC code for this functionality:
+
+FUNCTIONALITY: ${feature.title}
+DESCRIPTION: ${feature.description}
+USE CASES: ${feature.useCases.join(', ')}
+
+REQUIREMENTS:
+- Generate actual Python code, NOT JSON
+- Create separate files for each MVC component
+- Use Flask framework with proper MVC structure
+- Include complete, executable code
+
+MVC STRUCTURE:
+1. MODELS - Data entities and business logic
+2. VIEWS - User interface and templates  
+3. CONTROLLERS - API endpoints and business logic
+
+FILE ORGANIZATION:
+- app.py (Flask main app - in root directory)
+- models/ (Model files)
+- views/ (View files) 
+- controllers/ (Controller files)
+- templates/ (HTML templates)
+- config/ (Database and config files)
+
+CRITICAL REQUIREMENT - FLASK-SQLALCHEMY SETUP:
+For Flask applications with SQLAlchemy models, you MUST use Flask-SQLAlchemy (NOT raw SQLAlchemy):
+
+1. In app.py, ALWAYS include:
+   from flask_sqlalchemy import SQLAlchemy
+   
+   app = Flask(__name__)
+   app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+   app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+   
+   # Initialize Flask-SQLAlchemy
+   db = SQLAlchemy(app)
+
+2. In models/*.py files, ALWAYS use:
+   from app import db
+   from werkzeug.security import generate_password_hash, check_password_hash
+   
+   class ModelName(db.Model):
+       __tablename__ = 'table_name'
+       __table_args__ = {'extend_existing': True}  # Prevents table redefinition errors in pytest
+       # columns here
+       
+   CRITICAL - SHARED MODELS (MANDATORY - PREVENTS TABLE COLLISIONS):
+   - CERTAIN models are SHARED across functionalities and MUST use shared file paths:
+     * User model: ALWAYS use "models/user.py" (NOT "models/{functionality}_user.py")
+     * Product model: ALWAYS use "models/product.py" (NOT "models/{functionality}_product.py")
+     * Category model: ALWAYS use "models/category.py" (NOT "models/{functionality}_category.py")
+   - Before generating a User, Product, or Category model:
+     * Check if "models/user.py", "models/product.py", or "models/category.py" already exists
+     * If it exists: DO NOT generate it - just import from it: "from models.user import User"
+     * If it doesn't exist: Generate it with __table_args__ = {'extend_existing': True}
+   - Shared models use the same table name across functionalities (e.g., 'users', 'products', 'categories')
+   - DO NOT create functionality-specific User/Product/Category models - they will cause SQLAlchemy table collision errors
+       
+   CRITICAL - USER MODEL FIELDS:
+   - If generating a User model for registration/authentication, ALWAYS include these fields:
+     * id = db.Column(db.Integer, primary_key=True)
+     * first_name = db.Column(db.String(50), nullable=False)
+     * last_name = db.Column(db.String(50), nullable=False)
+     * username = db.Column(db.String(80), unique=True, nullable=False)
+     * email = db.Column(db.String(120), unique=True, nullable=False)
+     * password_hash = db.Column(db.String(128), nullable=False)  # NOT 'password', use 'password_hash'
+     * email_verified = db.Column(db.Boolean, default=False)  # For email verification
+   - ALWAYS include these methods:
+     def set_password(self, password):
+         self.password_hash = generate_password_hash(password)
+     
+     def check_password(self, password):
+         return check_password_hash(self.password_hash, password)
+   - DO NOT use 'password' as a column name - use 'password_hash' and hash the password
+
+3. In controllers/*.py files, ALWAYS use:
+   # CRITICAL - CORRECT FLASK IMPORTS (MANDATORY):
+   # ONLY import these from flask:
+   from flask import Blueprint, request, jsonify, redirect, url_for, flash, render_template
+   # DO NOT import anything else from flask that doesn't exist
+   # DO NOT import jsonpath_ng from flask (it's a separate library, not part of Flask)
+   # DO NOT import any third-party libraries from flask
+   # If you need jsonpath functionality, import it separately: from jsonpath_ng import parse (but only if actually needed)
+   
+   from app import db
+   
+   # Then use: db.session.add(), db.session.commit(), db.session.query()
+
+4. DO NOT use raw SQLAlchemy (declarative_base, init_db, sessionmaker)
+5. DO NOT create config/database.py with Base = declarative_base()
+6. Flask-SQLAlchemy's db object provides: db.Model, db.session, db.create_all(), db.drop_all()
+
+This ensures compatibility with Flask test clients and pytest fixtures that expect Flask-SQLAlchemy.
+
+CRITICAL REQUIREMENT - FLASK-MAIL SETUP:
+If the functionality requires sending emails (email verification, password reset, notifications, etc.), you MUST initialize Flask-Mail in app.py:
+
+1. In app.py, ALWAYS include Flask-Mail initialization:
+   from flask_mail import Mail
+   
+   app = Flask(__name__)
+   # ... other config ...
+   db = SQLAlchemy(app)
+   
+   # Initialize Flask-Mail
+   app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+   app.config['MAIL_PORT'] = 587
+   app.config['MAIL_USE_TLS'] = True
+   app.config['MAIL_USERNAME'] = 'your-email@gmail.com'
+   app.config['MAIL_PASSWORD'] = 'your-password'
+   mail = Mail(app)
+
+2. In controllers that need to send emails, import mail from app:
+   from app import db, mail
+   from flask_mail import Message
+   
+   def send_email(to, subject, template, **kwargs):
+       msg = Message(subject, recipients=[to], sender='your-email@example.com')
+       msg.body = template  # or msg.html for HTML emails
+       mail.send(msg)
+
+3. CRITICAL - BLUEPRINT REGISTRATION (MANDATORY):
+   - NEVER register blueprints inside controller or view files
+   - NEVER write "app.register_blueprint()" inside controllers/*.py or views/*.py files
+   - ONLY register blueprints in app.py
+   
+   WRONG (will cause NameError):
+   # In controllers/user_controller.py:
+   user_bp = Blueprint('user', __name__)
+   # ... routes ...
+   app.register_blueprint(user_bp)  # ERROR: app is not defined here!
+   
+   CORRECT:
+   # In controllers/user_controller.py:
+   user_bp = Blueprint('user', __name__)
+   # ... routes ...
+   # DO NOT register here - just define the blueprint
+   
+   CRITICAL - BLUEPRINT INITIALIZATION (MANDATORY):
+   - Blueprint constructor: Blueprint(name, import_name, ...)
+   - The second argument (import_name) is ALWAYS __name__
+   - CORRECT: Blueprint('user', __name__)
+   - WRONG: Blueprint('user', __name__, import_name=__name__)  # This causes TypeError: got multiple values for argument 'import_name'
+   - DO NOT pass import_name as a keyword argument when __name__ is already passed as the second positional argument
+   
+   # In app.py:
+   from controllers.user_controller import user_bp
+   from views.user_views import user_views
+   app.register_blueprint(user_bp)
+   app.register_blueprint(user_views)
+   
+   IMPORTANT: 
+   - Controllers and views should ONLY define blueprints, never register them
+   - app.py should import and register ALL blueprints
+   - If you create a blueprint in controllers/ or views/, add its registration to app.py
+
+4. ALWAYS include SECRET_KEY in app.py for token generation, sessions, and flash messages:
+   app.config['SECRET_KEY'] = 'dev-secret-key-change-in-production'
+
+CRITICAL - TOKEN GENERATION (for email verification, password reset, etc.):
+If the functionality requires token generation (email verification tokens, password reset tokens, etc.), you MUST add methods to the model:
+
+1. In models/*.py, add token generation and verification methods:
+   from itsdangerous import URLSafeTimedSerializer
+   from flask import current_app
+   
+   class User(db.Model):
+       # ... fields ...
+       
+       def generate_confirmation_token(self, expiration=3600):
+           s = URLSafeTimedSerializer(current_app.config.get('SECRET_KEY', 'dev-secret-key'))
+           return s.dumps({'user_id': self.id}, salt='email-confirm')
+       
+       @staticmethod
+       def verify_confirmation_token(token):
+           s = URLSafeTimedSerializer(current_app.config.get('SECRET_KEY', 'dev-secret-key'))
+           try:
+               data = s.loads(token, salt='email-confirm', max_age=3600)
+           except:
+               return None
+           return User.query.get(data['user_id'])
+
+CRITICAL - DATA TYPE HANDLING (MANDATORY - ABSOLUTE REQUIREMENT):
+- When receiving date fields (birthdate, date_of_birth, etc.) from EITHER request.form OR request.json, you MUST parse the string to a Python date object BEFORE creating model instances.
+- THIS IS NOT OPTIONAL - FAILURE TO PARSE WILL CAUSE TypeError AT RUNTIME.
+  
+  WRONG (will cause TypeError: SQLite Date type only accepts Python date objects):
+  birthdate = request.form['birthdate']  # This is a string '1990-01-01'
+  user = User(birthdate=birthdate, ...)  # ERROR: Cannot pass string to Date column
+  
+  CORRECT (MANDATORY - MUST DO THIS):
+  from datetime import datetime
+  # For form data (request.form):
+  birthdate_str = request.form['birthdate']  # e.g., '1990-01-01' (string from form)
+  birthdate = datetime.strptime(birthdate_str, '%Y-%m-%d').date()  # Parse to date object
+  user = User(birthdate=birthdate, ...)  # CORRECT: date object
+  
+  # OR for JSON data (request.json):
+  birthdate_str = request.json['birthdate']  # e.g., '1990-01-01' (string from JSON)
+  birthdate = datetime.strptime(birthdate_str, '%Y-%m-%d').date()  # Parse to date object
+  user = User(birthdate=birthdate, ...)  # CORRECT: date object
+  
+- ALWAYS import datetime and date at the top: from datetime import datetime, date
+- ALWAYS parse date strings from request.form OR request.json BEFORE passing to model constructor
+- NEVER pass date strings directly to model constructors - ALWAYS parse first
+- When receiving datetime fields, parse appropriately:
+  datetime_str = request.form.get('datetime_field') or request.json.get('datetime_field')
+  datetime_obj = datetime.strptime(datetime_str, '%Y-%m-%d %H:%M:%S')
+  
+EXAMPLE OF CORRECT CONTROLLER CODE:
+@user_bp.route('/register', methods=['POST'])
+def register():
+    from datetime import datetime, date  # CRITICAL: Import both datetime and date
+    import os
+    import re
+    data = request.form
+    
+    # CRITICAL: Validate ALL required fields FIRST
+    required_fields = ['first_name', 'middle_name', 'last_name', 'gender', 'contact_number', 
+                       'birthdate', 'username', 'email', 'password']
+    missing = [f for f in required_fields if not data.get(f)]
+    if missing:
+        flash('Please fill all required fields', 'danger')
+        return render_template('register.html'), 200
+    
+    # Validate email format
+    if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', data.get('email')):
+        flash('Invalid email format', 'danger')
+        return render_template('register.html'), 200
+    
+    # Validate contact_number (must be numeric, at least 10 digits)
+    contact_number = data.get('contact_number')
+    if not contact_number.isdigit() or len(contact_number) < 10:
+        flash('Invalid contact number. Must be numeric and at least 10 digits.', 'danger')
+        return render_template('register.html'), 200
+    
+    # Validate gender (must be one of allowed values)
+    allowed_genders = ['Male', 'Female', 'Other', 'M', 'F', 'O', 'male', 'female', 'other']
+    if data.get('gender') not in allowed_genders:
+        flash('Invalid gender value', 'danger')
+        return render_template('register.html'), 200
+    
+    # Validate profile_picture (must be an image file)
+    profile_picture = request.files.get('profile_picture')
+    if profile_picture and profile_picture.filename:
+        allowed_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'}
+        file_ext = os.path.splitext(profile_picture.filename)[1].lower()
+        if file_ext not in allowed_extensions:
+            flash('Profile picture must be an image file', 'danger')
+            return render_template('register.html'), 200
+        if profile_picture.content_type and not profile_picture.content_type.startswith('image/'):
+            flash('Profile picture must be an image file', 'danger')
+            return render_template('register.html'), 200
+    
+    # Parse birthdate string to date object
+    birthdate_str = data['birthdate']  # Get string from form
+    try:
+        birthdate = datetime.strptime(birthdate_str, '%Y-%m-%d').date()  # Parse to date
+        # CRITICAL: Validate birthdate is not in the future
+        if birthdate >= date.today():
+            flash('Invalid birthdate. Birthdate cannot be in the future.', 'danger')
+            return render_template('register.html'), 200
+    except (ValueError, TypeError):
+        flash('Invalid date format. Please use YYYY-MM-DD format.', 'danger')
+        return render_template('register.html'), 200
+    
+    # Now create user with date object
+    user = User(
+        first_name=data['first_name'],
+        middle_name=data.get('middle_name'),  # Optional field
+        last_name=data['last_name'],
+        birthdate=birthdate,  # Use parsed date object, NOT string
+        is_verified=False,  # CRITICAL: New users must be unverified until email verification
+        ...
+    )
+
+CRITICAL - ERROR HANDLING:
+- ALWAYS wrap db.session.commit() in try-except to handle database errors
+- Import IntegrityError: from sqlalchemy.exc import IntegrityError
+
+- For CONTROLLERS (API endpoints with JSON):
+  try:
+      # Validate required fields FIRST
+      required_fields = ['field1', 'field2', 'field3']
+      missing = [f for f in required_fields if not request.json.get(f)]
+      if missing:
+          return jsonify({'error': 'Missing required fields', 'missing': missing}), 400
+      
+      # Check for duplicates BEFORE creating
+      if Model.query.filter_by(unique_field=request.json['unique_field']).first():
+          return jsonify({'error': 'Duplicate entry'}), 400
+      
+      # Create and save
+      obj = Model(...)
+      db.session.add(obj)
+      db.session.commit()
+      return jsonify({'message': 'Success message'}), 201
+  except IntegrityError:
+      db.session.rollback()
+      return jsonify({'error': 'Database error (e.g., duplicate entry)'}), 400
+  except Exception as e:
+      db.session.rollback()
+      return jsonify({'error': 'Operation failed'}), 500
+
+- For VIEWS (web forms with HTML):
+  try:
+      # CRITICAL: Validate required fields FIRST, BEFORE parsing dates or processing data
+      required_fields = ['field1', 'field2', 'birthdate']  # Include ALL required fields from SRS
+      missing = [f for f in required_fields if not request.form.get(f)]
+      if missing:
+          flash('Please fill all required fields', 'danger')
+          return render_template('form.html'), 200  # Return 200 for validation errors in views
+      
+      # CRITICAL: Parse dates ONLY AFTER validation confirms they exist
+      from datetime import datetime, date  # Import both datetime and date
+      birthdate_str = request.form.get('birthdate')
+      try:
+          birthdate = datetime.strptime(birthdate_str, '%Y-%m-%d').date()
+          # Validate birthdate is not in the future
+          if birthdate >= date.today():
+              flash('Invalid birthdate. Birthdate cannot be in the future.', 'danger')
+              return render_template('form.html'), 200
+      except (ValueError, TypeError):
+          flash('Invalid date format. Please use YYYY-MM-DD format.', 'danger')
+          return render_template('form.html'), 200
+      
+      # Validate email format if email field exists
+      import re
+      email = request.form.get('email')
+      if email:
+          if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
+              flash('Invalid email format', 'danger')
+              return render_template('form.html'), 200
+      
+      # Validate contact_number if it exists (should be numeric)
+      contact_number = request.form.get('contact_number')
+      if contact_number:
+          if not contact_number.isdigit() or len(contact_number) < 10:
+              flash('Invalid contact number. Must be numeric and at least 10 digits.', 'danger')
+              return render_template('form.html'), 200
+      
+      # Validate gender if it exists (should be one of allowed values)
+      gender = request.form.get('gender')
+      if gender:
+          allowed_genders = ['Male', 'Female', 'Other', 'M', 'F', 'O']  # Adjust based on SRS
+          if gender not in allowed_genders:
+              flash('Invalid gender value', 'danger')
+              return render_template('form.html'), 200
+      
+      # Validate profile_picture if it exists (must be an image file)
+      profile_picture = request.files.get('profile_picture')
+      if profile_picture and profile_picture.filename:
+          allowed_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'}
+          file_ext = os.path.splitext(profile_picture.filename)[1].lower()
+          if file_ext not in allowed_extensions:
+              flash('Profile picture must be an image file (jpg, png, gif, etc.)', 'danger')
+              return render_template('form.html'), 200
+          # Also check content_type if available
+          if profile_picture.content_type and not profile_picture.content_type.startswith('image/'):
+              flash('Profile picture must be an image file', 'danger')
+              return render_template('form.html'), 200
+      
+      # Create and save
+      obj = Model(...)
+      db.session.add(obj)
+      db.session.commit()
+      flash('Success message', 'success')
+      return redirect(url_for('success_route'))
+  except IntegrityError:
+      db.session.rollback()
+      flash('Error message (e.g., Email or username already exists)', 'danger')
+      return redirect(url_for('form_route'))
+  except Exception as e:
+      db.session.rollback()
+      flash('Operation failed. Please try again.', 'danger')
+      return redirect(url_for('form_route'))
+  
+- Handle duplicate unique constraints (username, email, etc.) gracefully
+- For VIEWS: Return status 200 for validation errors (render_template), redirect for success
+- For CONTROLLERS: Return appropriate HTTP status codes (400 for bad requests, 201 for success, 200 for GET)
+
+CRITICAL - DECIDING CONTROLLERS vs VIEWS:
+- Use CONTROLLERS (API endpoints with JSON) when:
+  * Functionality involves data submission/retrieval that might be tested programmatically
+  * Tests might use client.post('/route', json={...}) or client.get('/route')
+  * Functionality needs to return structured data (JSON responses)
+  * Examples: User registration, authentication, API endpoints, data CRUD operations
+  
+- Use VIEWS (web forms with HTML) when:
+  * Functionality involves user-facing web forms with HTML templates
+  * Tests might use client.post('/route', data={...}) for form submissions
+  * Functionality needs to render HTML pages and use flash messages
+  * Examples: Web forms, HTML pages, template rendering
+
+CRITICAL - VIEWS vs CONTROLLERS:
+- VIEWS (views/*.py): Handle web forms, HTML templates, form data (request.form), flash messages, redirects
+  - Use Blueprint with routes like @user_views.route('/register', methods=['GET', 'POST'])
+  - Use render_template() for GET requests
+  - Use request.form for POST data (NOT request.json)
+  - Use flash() for user feedback messages
+  - Use redirect() after successful operations
+  - DO NOT register the blueprint in the views file - only define it
+  
+- CONTROLLERS (controllers/*.py): Handle API endpoints, JSON data (request.json), JSON responses
+  - Use Blueprint with routes like @user_bp.route('/register', methods=['POST'])
+  - IMPORTANT: If functionality involves user registration, authentication, or data submission that might be tested via JSON, use controllers (NOT views)
+  - Use request.json for POST data (NOT request.form)
+  - Use jsonify() for ALL responses (success and error)
+  - Return JSON with appropriate HTTP status codes:
+    * 201 for successful creation (POST)
+    * 200 for successful operations (GET, PUT)
+    * 400 for bad requests (missing fields, validation errors, duplicates)
+    * 404 for not found
+    * 500 for server errors
+  - Example controller structure for user registration:
+    from flask import Blueprint, request, jsonify
+    from app import db
+    from models.user import User
+    from sqlalchemy.exc import IntegrityError
+    
+    user_bp = Blueprint('user', __name__)
+    
+    @user_bp.route('/register', methods=['POST'])
+    def register():
+        data = request.json
+        # Validate required fields FIRST
+        required_fields = ['first_name', 'last_name', 'username', 'email', 'password']
+        missing = [f for f in required_fields if not data.get(f)]
+        if missing:
+            return jsonify({'error': 'Missing required fields', 'missing': missing}), 400
+        
+        # Check for duplicates BEFORE creating
+        if User.query.filter_by(username=data['username']).first():
+            return jsonify({'error': 'Username already exists'}), 400
+        if User.query.filter_by(email=data['email']).first():
+            return jsonify({'error': 'Email already exists'}), 400
+        
+        # Create user
+        try:
+            user = User(
+                first_name=data['first_name'],
+                last_name=data['last_name'],
+                username=data['username'],
+                email=data['email']
+            )
+            user.set_password(data['password'])  # Hash the password
+            db.session.add(user)
+            db.session.commit()
+            return jsonify({'message': 'User registered successfully'}), 201
+        except IntegrityError:
+            db.session.rollback()
+            return jsonify({'error': 'Registration failed'}), 400
+  - DO NOT register the blueprint in the controller file - only define it
+
+ABSOLUTE RULE - BLUEPRINT REGISTRATION:
+- NEVER write "app.register_blueprint()" inside any controller or view file
+- NEVER import "app" in controller or view files for the purpose of registering blueprints
+- Controllers and views should ONLY define blueprints (Blueprint('name', __name__)) and routes
+- ALL blueprint registration MUST happen ONLY in app.py
+- Example of what NOT to do in controllers/user_controller.py:
+  user_bp = Blueprint('user', __name__)
+  # ... routes ...
+  app.register_blueprint(user_bp)  # WRONG! This will cause NameError
+- Example of what TO do in controllers/user_controller.py:
+  user_bp = Blueprint('user', __name__)
+  # ... routes ...
+  # End of file - no registration here
+- Then in app.py:
+  from controllers.user_controller import user_bp
+  app.register_blueprint(user_bp)  # CORRECT - registration only in app.py
+
+CRITICAL - FORM VALIDATION (for views):
+- ALWAYS validate required fields BEFORE parsing dates or processing data:
+  required_fields = ['field1', 'field2', 'field3', 'birthdate', 'middle_name']  # Include ALL required fields from SRS
+  missing = [f for f in required_fields if not request.form.get(f)]
+  if missing:
+      flash('Please fill all required fields', 'danger')
+      return render_template('form.html'), 200  # Return 200 for validation errors in views
+  
+  # CRITICAL: Import both datetime and date
+  from datetime import datetime, date
+  import os
+  import re
+  
+  # CRITICAL: Parse dates ONLY AFTER validation confirms they exist
+  birthdate_str = request.form.get('birthdate')
+  if not birthdate_str:
+      flash('Birthdate is required', 'danger')
+      return render_template('form.html'), 200
+  try:
+      birthdate = datetime.strptime(birthdate_str, '%Y-%m-%d').date()
+      # CRITICAL: Validate birthdate is not in the future
+      if birthdate >= date.today():
+          flash('Invalid birthdate. Birthdate cannot be in the future.', 'danger')
+          return render_template('form.html'), 200
+  except (ValueError, TypeError):
+      flash('Invalid date format. Please use YYYY-MM-DD format.', 'danger')
+      return render_template('form.html'), 200
+  
+  # Validate email format if email field exists
+  email = request.form.get('email')
+  if email:
+      email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+      if not re.match(email_pattern, email):
+          flash('Invalid email format', 'danger')
+          return render_template('form.html'), 200
+  
+  # CRITICAL: Validate contact_number format (must be numeric and valid length)
+  contact_number = request.form.get('contact_number')
+  if contact_number:
+      if not contact_number.isdigit() or len(contact_number) < 10:
+          flash('Invalid contact number. Must be numeric and at least 10 digits.', 'danger')
+          return render_template('form.html'), 200
+  
+  # CRITICAL: Validate gender value (must be one of allowed values)
+  gender = request.form.get('gender')
+  if gender:
+      allowed_genders = ['Male', 'Female', 'Other', 'M', 'F', 'O', 'male', 'female', 'other']
+      if gender not in allowed_genders:
+          flash('Invalid gender value', 'danger')
+          return render_template('form.html'), 200
+  
+  # CRITICAL: Validate profile_picture file type (must be an image)
+  profile_picture = request.files.get('profile_picture')
+  if profile_picture and profile_picture.filename:
+      allowed_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'}
+      file_ext = os.path.splitext(profile_picture.filename)[1].lower()
+      if file_ext not in allowed_extensions:
+          flash('Profile picture must be an image file (jpg, png, gif, etc.)', 'danger')
+          return render_template('form.html'), 200
+      # Also validate content_type
+      if profile_picture.content_type and not profile_picture.content_type.startswith('image/'):
+          flash('Profile picture must be an image file', 'danger')
+          return render_template('form.html'), 200
+  
+- ALWAYS validate required fields before processing:
+  required_fields = ['field1', 'field2', 'field3']
+  missing_fields = [field for field in required_fields if not request.form.get(field)]
+  if missing_fields:
+      flash('Please fill all required fields', 'danger')
+      return render_template('form.html')
+  
+- Validate date formats:
+  try:
+      birthdate = datetime.strptime(birthdate_str, '%Y-%m-%d').date()
+  except ValueError:
+      flash('Invalid date format. Please use YYYY-MM-DD format.', 'danger')
+      return render_template('form.html')
+
+CRITICAL - TEMPLATE FLASH MESSAGES:
+- ALL templates that use flash() MUST display flash messages:
+  {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+          <ul>
+          {% for category, message in messages %}
+              <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+          </ul>
+      {% endif %}
+  {% endwith %}
+  
+- Place this code at the top of the template body, before the form
+
+CRITICAL - FILE UPLOADS:
+- When saving uploaded files (profile pictures, documents, etc.), ALWAYS create the directory first:
+  import os
+  from werkzeug.utils import secure_filename
+  
+  if profile_picture:
+      # CRITICAL: Create upload directory if it doesn't exist
+      upload_dir = 'static/uploads'
+      os.makedirs(upload_dir, exist_ok=True)  # Create directory if missing
+      
+      # Use secure_filename to prevent path traversal attacks
+      filename = secure_filename(profile_picture.filename)
+      filepath = os.path.join(upload_dir, filename)
+      
+      # Save the file
+      profile_picture.save(filepath)
+      user.profile_picture = filename  # Store only filename, not full path
+  
+- NEVER save files without creating the directory first - this causes FileNotFoundError
+- ALWAYS use secure_filename() to sanitize filenames
+- Store only the filename in the database, not the full path
+
+CRITICAL - EMAIL VERIFICATION ROUTES:
+- If implementing email verification, use token-based pattern in CONTROLLERS (for API/JSON responses):
+  
+  PATTERN - Token-based in Controller (for JSON API):
+  @user_bp.route('/confirm/<token>', methods=['GET'])
+  def confirm_email(token):
+      user = User.verify_confirmation_token(token)
+      if not user:
+          return jsonify({'message': 'The confirmation link is invalid or has expired.'}), 400
+      user.email_verified = True
+      db.session.commit()
+      return jsonify({'message': 'You have confirmed your account'}), 200
+  
+  PATTERN - Simple ID-based in Views (for web forms):
+  @user_views.route('/verify/<int:user_id>')
+  def verify_email(user_id):
+      user = User.query.get(user_id)
+      if user:
+          user.email_verified = True
+          db.session.commit()
+          flash('Email verified successfully!', 'success')
+      else:
+          flash('Invalid verification link.', 'danger')
+      return redirect(url_for('user_views.register'))
+  
+- In email body, include the verification link:
+  # For token-based (controllers):
+  token = user.generate_confirmation_token()
+  confirm_url = url_for('user_bp.confirm_email', token=token, _external=True)
+  msg.body = 'Please verify your email by clicking: {}'.format(confirm_url)
+  
+  # For ID-based (views):
+  msg.body = 'Please verify your email by clicking the link: http://example.com/verify/{}'.format(user.id)
+
+CRITICAL - ROUTE REDIRECTS:
+- ONLY redirect to routes that exist in your code
+- If login route doesn't exist, redirect to a route that does exist (e.g., 'register' or '/')
+- DO NOT use url_for('login') if no login route is defined
+- Check all routes before using url_for() - only reference existing endpoints
+
+OUTPUT FORMAT:
+Use this format for each file:
+#### filename.py
+[Python code here]
+
+#### filename2.py
+[Python code here]
+
+Generate the complete Python code for this functionality. Return ONLY the code files with #### filename format. Do not include any explanations, descriptions, or additional text.
+
+IMPORTANT: If models use SQLAlchemy, ALWAYS include config/database.py and config/__init__.py files.
+           

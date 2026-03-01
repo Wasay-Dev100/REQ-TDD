@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Home</title>
+</head>
+<body>
+    <h1>Welcome, {{ current_user.username }}</h1>
+    <nav>
+        <ul>
+            <li><a href="{{ url_for('admin_interface.staff_list') }}">Manage Staff</a></li>
+            <li><a href="{{ url_for('admin_interface.menu_list') }}">Manage Menu</a></li>
+            <li><a href="{{ url_for('admin_interface.inventory_list') }}">Manage Inventory</a></li>
+        </ul>
+    </nav>
+</body>
+</html>

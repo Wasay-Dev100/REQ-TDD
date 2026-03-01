@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contact Developer</title>
+</head>
+<body>
+    <h1>Contact Developer</h1>
+    <form action="/contact-developer" method="post">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="{{ form_data.get('name', '') }}">
+        <span>{{ errors.get('name', '') }}</span><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ form_data.get('email', '') }}">
+        <span>{{ errors.get('email', '') }}</span><br>
+
+        <label for="message">Message:</label>
+        <textarea id="message" name="message">{{ form_data.get('message', '') }}</textarea>
+        <span>{{ errors.get('message', '') }}</span><br>
+
+        <button type="submit">Submit</button>
+    </form>
+    <h2>Social Links</h2>
+    <ul>
+        <li><a href="{{ social_links.github }}">GitHub</a></li>
+        <li><a href="{{ social_links.linkedin }}">LinkedIn</a></li>
+        <li><a href="{{ social_links.twitter }}">Twitter</a></li>
+        <li>Email: {{ social_links.email }}</li>
+    </ul>
+</body>
+</html>

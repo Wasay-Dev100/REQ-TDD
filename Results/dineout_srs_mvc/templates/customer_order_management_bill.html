@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bill</title>
+</head>
+<body>
+  <h1>Bill</h1>
+
+  {% if order %}
+    <div>Order #{{ order.id }}</div>
+  {% endif %}
+
+  {% if bill_request %}
+    <div>Bill request status: {{ bill_request.status }}</div>
+  {% else %}
+    <div>No bill requested.</div>
+  {% endif %}
+
+  {% if totals %}
+    <div>Total: {{ totals.total_cents }} {{ totals.currency }}</div>
+  {% endif %}
+</body>
+</html>

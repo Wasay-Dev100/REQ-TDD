@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback</title>
+</head>
+<body>
+    <h1>Feedback</h1>
+    <div>
+        <h2>Order Feedback</h2>
+        <form method="post" action="/orders/{{ order.id }}/feedback">
+            <label for="food_rating">Food Rating:</label>
+            <input type="number" id="food_rating" name="food_rating" min="1" max="5">
+            <br>
+            <label for="service_rating">Service Rating:</label>
+            <input type="number" id="service_rating" name="service_rating" min="1" max="5">
+            <br>
+            <label for="comments">Comments:</label>
+            <textarea id="comments" name="comments"></textarea>
+            <br>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</body>
+</html>

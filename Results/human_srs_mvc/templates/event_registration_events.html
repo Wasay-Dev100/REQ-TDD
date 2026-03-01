@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Registration - Events</title>
+</head>
+<body>
+    <h1>Upcoming Events</h1>
+    <ul>
+        {% for event in events %}
+            <li>
+                <a href="{{ url_for('event_registration_bp.event_detail', event_id=event['id']) }}">{{ event['title'] }}</a>
+                <p>{{ event['description'] }}</p>
+                <p>Location: {{ event['location'] }}</p>
+                <p>Start: {{ event['start_at'] }}</p>
+                <p>End: {{ event['end_at'] }}</p>
+                <p>Capacity: {{ event['capacity'] }}</p>
+                <p>Remaining: {{ event['remaining_capacity'] }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

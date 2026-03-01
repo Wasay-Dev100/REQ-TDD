@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit {{ club.name }}</title>
+</head>
+<body>
+    <h1>Edit {{ club.name }}</h1>
+    <form method="post" action="{{ url_for('club_management.update_club', club_id=club.id) }}">
+        <label for="description">Description:</label>
+        <textarea id="description" name="description">{{ club.description }}</textarea>
+        <label for="members_list">Members List:</label>
+        <textarea id="members_list" name="members_list">{{ club.members_list }}</textarea>
+        <h2>Contact Information</h2>
+        <label for="contact_name">Name:</label>
+        <input type="text" id="contact_name" name="contact_name" value="{{ club.contact_name }}">
+        <label for="contact_email">Email:</label>
+        <input type="email" id="contact_email" name="contact_email" value="{{ club.contact_email }}">
+        <label for="contact_phone">Phone:</label>
+        <input type="text" id="contact_phone" name="contact_phone" value="{{ club.contact_phone }}">
+        <button type="submit">Save</button>
+    </form>
+</body>
+</html>

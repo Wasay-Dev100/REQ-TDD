@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Products</title>
+</head>
+<body>
+    {{ render_product_browse_page(category_id, page, per_page, total, products, message, categories) | safe }}
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Event Request Detail</title>
+</head>
+<body>
+    <h1>Event Request Detail</h1>
+    <p>Title: {{ event_request.title }}</p>
+    <p>Description: {{ event_request.description }}</p>
+    <p>Location: {{ event_request.location }}</p>
+    <p>Start Time: {{ event_request.start_at }}</p>
+    <p>End Time: {{ event_request.end_at }}</p>
+    <p>Status: {{ event_request.status }}</p>
+    <p>Proposed By: {{ event_request.proposed_by_user_id }}</p>
+    <p>Reviewed By: {{ event_request.reviewed_by_user_id }}</p>
+    <p>Reviewed At: {{ event_request.reviewed_at }}</p>
+    <p>Decision Reason: {{ event_request.decision_reason }}</p>
+</body>
+</html>

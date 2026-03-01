@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Help</title>
+</head>
+<body>
+    <h1>Customer Help</h1>
+    <button onclick="requestHelp('general')">Request General Help</button>
+    <button onclick="requestHelp('order')">Call Waiter for Order</button>
+
+    <script>
+        function requestHelp(type) {
+            fetch('/help/request', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    table_number: 1,
+                    request_type: type,
+                    message: 'Need assistance'
+                })
+            }).then(response => response.json())
+              .then(data => console.log(data));
+        }
+    </script>
+</body>
+</html>

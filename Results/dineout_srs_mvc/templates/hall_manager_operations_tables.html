@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tables</title>
+</head>
+<body>
+  <h1>Tables</h1>
+  <ul>
+    {% for t in tables %}
+      <li>
+        Table {{ t.table_number }} (cap={{ t.capacity }}) - status={{ t.status }}
+        {% if t.reserved_by_name %} reserved_by={{ t.reserved_by_name }}{% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</body>
+</html>

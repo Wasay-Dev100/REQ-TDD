@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Staff List</title>
+</head>
+<body>
+    <h1>Staff Members</h1>
+    <a href="/admin/staff/new">Add New Staff Member</a>
+    <ul>
+        {% for member in staff %}
+        <li>
+            {{ member.first_name }} {{ member.last_name }} - {{ member.role_title }}
+            <a href="/admin/staff/{{ member.id }}/edit">Edit</a>
+            <form action="/admin/staff/{{ member.id }}" method="post" style="display:inline;">
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit">Delete</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

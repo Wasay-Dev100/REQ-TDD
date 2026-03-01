@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Help</title>
+</head>
+<body>
+    <h1>Request Help</h1>
+    <form id="help-form">
+        <label for="table_number">Table Number:</label>
+        <input type="number" id="table_number" name="table_number" required><br>
+        <label for="request_type">Request Type:</label>
+        <select id="request_type" name="request_type">
+            {% for rtype in request_types %}
+            <option value="{{ rtype }}">{{ rtype }}</option>
+            {% endfor %}
+        </select><br>
+        <label for="message">Message:</label>
+        <textarea id="message" name="message"></textarea><br>
+        <button type="submit">Request Help</button>
+    </form>
+    <script>
+        document.getElementById('help-form').onsubmit = function(event) {
+            event.preventDefault();
+            const data = {
+                table_number: parseInt(document.getElementById('table_number').value, 10),
+                request_type: document.getElementById('request_type').value,
+                message: document.getElementById('message').value
+            };
+            fetch('/api/help/requests', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(() => { alert('Help request submitted!'); })
+            .catch(error => { console.error('Error:', error); });
+        };
+    </script>
+</body>
+</html>

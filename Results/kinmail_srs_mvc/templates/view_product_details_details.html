@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+</head>
+<body>
+    <h1>{{ product.name }}</h1>
+    <p>{{ product.short_description }}</p>
+    <p>{{ product.description }}</p>
+    <p>Price: {{ product.currency }} {{ product.price_amount }}</p>
+    {% if product.compare_at_amount %}
+        <p>Compare at: {{ product.currency }} {{ product.compare_at_amount }}</p>
+    {% endif %}
+    <p>Tax included: {{ 'Yes' if product.tax_included else 'No' }}</p>
+    {% if product.delivery_estimate_text %}
+        <p>Delivery estimate: {{ product.delivery_estimate_text }}</p>
+    {% endif %}
+    {% if product.delivery_fee_amount %}
+        <p>Delivery fee: {{ product.currency }} {{ product.delivery_fee_amount }}</p>
+    {% endif %}
+    {% if product.warranty_text %}
+        <p>Warranty: {{ product.warranty_text }}</p>
+    {% endif %}
+</body>
+</html>

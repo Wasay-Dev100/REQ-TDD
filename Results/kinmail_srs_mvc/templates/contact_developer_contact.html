@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Developer</title>
+</head>
+<body>
+    <h1>Contact Developer</h1>
+    <form id="contactForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required maxlength="120">
+        <br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required maxlength="254">
+        <br>
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" required></textarea>
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+
+    <h2>Social Links</h2>
+    <ul>
+        <li><a href="{{ social_links.twitter }}" target="_blank" rel="noopener noreferrer">Twitter</a></li>
+        <li><a href="{{ social_links.linkedin }}" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+        <li><a href="{{ social_links.github }}" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+    </ul>
+
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                message: document.getElementById('message').value
+            };
+            fetch('/contact-developer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            .then(async response => {
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) {
+                    alert('Errors: ' + JSON.stringify(data.errors || data));
+                    return;
+                }
+                alert('Message sent successfully!');
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>

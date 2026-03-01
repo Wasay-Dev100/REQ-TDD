@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Food Ready</title>
+</head>
+<body>
+    <h1>Order {{ order.id }} is Ready!</h1>
+    <p>Status: {{ order.status }}</p>
+    <button onclick="requestBill()">Request Bill</button>
+    <button onclick="submitFeedback()">Submit Feedback</button>
+    <script>
+        function requestBill() {
+            fetch(`/orders/${{ order.id }}/request-bill`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => alert(data.message));
+        }
+
+        function submitFeedback() {
+            fetch(`/orders/${{ order.id }}/feedback`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => alert(data.message));
+        }
+    </script>
+</body>
+</html>

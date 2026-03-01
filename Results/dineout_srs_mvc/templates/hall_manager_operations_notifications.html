@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Notifications</title>
+</head>
+<body>
+  <h1>Notifications</h1>
+  <ul>
+    {% for n in notifications %}
+      <li>
+        {{ n.created_at }} - {{ n.event_type }} - {{ n.message }} - read={{ n.is_read }}
+      </li>
+    {% endfor %}
+  </ul>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Feedback</title>
+</head>
+<body>
+    <h1>Customer Feedback</h1>
+    <div id="context">
+        <span id="bill_id">{{ bill_id }}</span>
+        <span id="customer_session_id">{{ customer_session_id }}</span>
+    </div>
+
+    <form id="feedback-form" action="/api/feedback/submit" method="post">
+        {% for question in questions %}
+            <fieldset data-question-id="{{ question.id }}">
+                <legend>{{ question.prompt }}</legend>
+                {% for choice in question.choices %}
+                    <label>
+                        <input type="radio" name="q{{ question.id }}" value="{{ choice.id }}">
+                        {{ choice.label }}
+                    </label><br>
+                {% endfor %}
+            </fieldset>
+        {% endfor %}
+        <button type="submit">Submit Feedback</button>
+    </form>
+</body>
+</html>

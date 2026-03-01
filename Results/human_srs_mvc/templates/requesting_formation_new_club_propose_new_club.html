@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Propose a New Club</title>
+</head>
+<body>
+    <h1>Propose a New Club</h1>
+    <form action="/clubs/propose" method="post">
+        <label for="club_name">Club Name:</label>
+        <input type="text" id="club_name" name="club_name" required>
+        <br>
+        <label for="club_category">Club Category:</label>
+        <input type="text" id="club_category" name="club_category" required>
+        <br>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required></textarea>
+        <br>
+        <label for="objectives">Objectives:</label>
+        <textarea id="objectives" name="objectives" required></textarea>
+        <br>
+        <label for="proposed_activities">Proposed Activities:</label>
+        <textarea id="proposed_activities" name="proposed_activities" required></textarea>
+        <br>
+        <label for="faculty_advisor_name">Faculty Advisor Name:</label>
+        <input type="text" id="faculty_advisor_name" name="faculty_advisor_name" required>
+        <br>
+        <label for="faculty_advisor_email">Faculty Advisor Email:</label>
+        <input type="email" id="faculty_advisor_email" name="faculty_advisor_email" required>
+        <br>
+        <label for="co_founders">Co-founders:</label>
+        <textarea id="co_founders" name="co_founders" required></textarea>
+        <br>
+        <label for="expected_members_count">Expected Members Count:</label>
+        <input type="number" id="expected_members_count" name="expected_members_count" required>
+        <br>
+        <button type="submit">Submit Proposal</button>
+    </form>
+</body>
+</html>

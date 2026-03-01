@@ -1,0 +1,697 @@
+Generate comprehensive test cases for the following ${functionalityName} functionality in ${language.toUpperCase()} using MVC architecture:
+
+${modeInstruction}${srsContext}
+
+${contractSection}
+
+MVC TESTING REQUIREMENTS:
+
+1. MODEL LAYER TESTS:
+   - Test data validation and business logic
+   - Test entity relationships and constraints
+   - Test database operations and queries
+   - Test model methods and properties
+
+2. VIEW LAYER TESTS:
+   - Test template rendering and data display
+   - Test user interaction handling
+   - Test form validation and submission
+   - Test UI component functionality
+
+3. CONTROLLER LAYER TESTS:
+   - Test API endpoints and routes
+   - Test request/response handling
+   - Test business logic coordination
+   - Test error handling and validation
+
+CRITICAL REQUIREMENTS:
+
+CRITICAL - TEST FUNCTION NAMING (MANDATORY):
+- Test function names MUST be valid Python identifiers (letters, numbers, underscores only)
+- When routes contain parameters like "/products/<int:product_id>", sanitize them for function names:
+  * WRONG: def test__products_<int:product_id>_get_exists(self):  # INVALID SYNTAX
+  * CORRECT: def test_products_product_id_get_exists(self):  # Extract parameter name, remove < > :
+- Route parameter syntax: "<int:product_id>" → extract "product_id" for function name
+- Route parameter syntax: "<string:name>" → extract "name" for function name
+- Remove all < > : characters from function names - they are INVALID in Python
+- Example route "/products/<int:product_id>/general" → function name: "test_products_product_id_general_get_exists"
+- Always sanitize route paths before using in function names:
+  1. Replace "/" with "_"
+  2. Extract parameter names from <type:name> patterns (use just "name")
+  3. Remove all < > : characters
+  4. Collapse multiple underscores
+  5. Remove leading/trailing underscores
+- Create COMPLETELY STANDALONE tests that require NO external imports (except standard test framework imports)
+- For Java: Include proper JUnit imports (import org.junit.Test; import static org.junit.Assert.*;)
+- For JavaScript: Include proper Jest imports if needed
+- For Python: Include proper pytest imports if needed
+- DO NOT import from any modules that don't exist in the project
+- CRITICAL: For Flask routes (@app.route), ALWAYS import the app from the actual code file - NEVER duplicate or recreate the Flask app
+- CRITICAL: NEVER copy route functions, models, or any code into the test file - ALWAYS import from the contract-defined file paths
+- CRITICAL: For standalone functions, import from code file - do NOT copy functions into test file
+- Create mock data and test fixtures within the test file
+- Make tests self-contained and runnable without any dependencies
+- Test the core logic and business rules
+- Use mocks for any external dependencies
+- CRITICAL: The test file MUST start with imports from contract-defined file paths (app.py, models/, controllers/), NOT with code duplication
+
+TEST INDEPENDENCE (CRITICAL):
+- Each test MUST be completely independent and runnable in isolation
+- Tests MUST be able to run in ANY order without affecting each other
+- Each test MUST set up its own test data - NEVER rely on data from other tests
+- Each test MUST clean up after itself - use fixtures with proper teardown
+- Use isolated in-memory databases (sqlite:///:memory:) - each test gets a fresh database
+- NEVER share state between tests (no global variables, no shared fixtures without proper isolation)
+- Each test function MUST be self-contained:
+  * Create all required test data within the test function or in isolated fixtures
+  * Do NOT assume data exists from previous tests
+  * Do NOT leave data for other tests to use
+- Use pytest fixtures with proper setup/teardown for database isolation:
+  @pytest.fixture
+  def client():
+      app.config['TESTING'] = True
+      app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'  # Fresh in-memory DB for each test
+      with app.app_context():
+          db.create_all()  # Create tables
+          yield app.test_client()
+          db.session.remove()  # Clean up session
+          db.drop_all()  # Drop all tables - CRITICAL for isolation
+- For tests that need existing data (e.g., testing login with existing user):
+  * Create the user WITHIN the test function, not in a shared fixture
+  * OR use a fixture that creates fresh data for each test
+  * Example: def test_login(client): user = _create_user_in_db(...); response = client.post('/login', ...)
+- Mock external dependencies (email, file system, APIs) to ensure isolation
+- Use unique test data for each test to avoid conflicts (unique usernames, emails, IDs)
+
+DEPENDENCY AWARENESS (for missing code, NOT test dependencies):
+- Some tests may require other functionalities to be implemented first (e.g., login tests need User model, profile tests need authentication)
+- If a test depends on another feature that might not exist:
+  * Use try/except blocks for optional imports: try: from models.user import User; except ImportError: pytest.skip("User model not implemented")
+  * Check if routes exist before testing: if '/dashboard' not in [r.rule for r in app.url_map.iter_rules()]: pytest.skip("Dashboard route not implemented")
+  * Document dependencies in test docstrings: "# Requires: User model, Login route"
+  * Generate tests that gracefully handle missing dependencies rather than failing with ImportError
+- Common dependencies (these are CODE dependencies, not TEST dependencies):
+  * User-related tests → User model
+  * Authentication tests → User model + Login route
+  * Protected route tests → User model + Login route + Authentication middleware
+  * Relationship tests → Multiple models (User, Product, etc.) + Relationships defined
+  * Redirect tests → Target route must exist (e.g., login redirects to dashboard)
+
+CRITICAL CODE STRUCTURE DETECTION (from contract):
+- Use the contract structure to determine what to test
+- The contract defines ALL routes, models, controllers, and functions that will be implemented
+- Generate tests for ALL routes defined in contract.file_structure.controllers[].routes
+- Generate tests for ALL models defined in contract.file_structure.models
+- Generate tests for ALL helper functions defined in contract.file_structure.controllers[].helper_functions
+- Use Flask test client tests (client.post(), client.get()) for routes
+- Create app fixture with app.app_context() for database operations
+- For MVC: Use the contract-defined structure (models/, views/, controllers/)
+
+Generate:
+1. Use the contract structure to determine what to test
+   - Test ALL routes defined in the contract
+   - Test ALL models defined in the contract
+   - Test ALL helper functions defined in the contract
+   - Use MVC structure from contract (models/, controllers/, views/)
+2. If Flask routes exist (@app.route):
+   - CRITICAL: For MVC structure, ALWAYS import from app.py and models/ - NEVER recreate or duplicate
+   - MUST use: import sys; import os; sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__)))); from app import app, db, mail; from models.user import User
+   - For MVC structure: Import from app.py (app, db, mail) and models/ (User, etc.) - NOT from a single module
+   - Use contract-defined file paths: ${contract.file_structure?.app_file || 'app.py'}, models/, controllers/
+   - Import paths should match contract.import_paths exactly
+   - Use Flask test client: client = app.test_client()
+   - Test ONLY routes that exist: client.post('/actual_route', data={...}) or client.get('/actual_route')
+   - DO NOT test routes that don't exist (e.g., don't test '/login' if code only has '/register')
+   - Create app fixture with app.app_context() for database setup/teardown (REQUIRED for Flask 3)
+   - Mock Flask-Mail.send() if email functionality is tested
+   - DO NOT copy route functions, models, or any code - test the routes directly by importing
+   - If route requires authentication (@login_required from flask_login):
+     * Create a test user in the database within app.app_context()
+     * Use client.post('/login', data={'username': 'testuser', 'password': 'testpass'}) to login FIRST if login route exists
+     * OR use @patch to mock current_user if login route doesn't exist: @patch('app.current_user', MagicMock(username='testuser', id=1))
+     * DO NOT use Basic auth (request.authorization) if code uses Flask-Login - use session-based login
+3. If MVC structure exists (models/, views/, controllers/):
+   - Import models: from models.user import User (models are classes, safe to import)
+   - Import app/db: from app import app, db (these are Flask objects, safe to import)
+   - DO NOT import route functions from controllers: If controller has @app.route('/register') def register():, DO NOT import register - test via client.post('/register')
+   - If controller has standalone helper functions (not routes), you can import those
+   - Test models: Test data validation, business logic, database operations
+   - Test controllers: Test routes via test client (client.post('/route'), client.get('/route')) - DO NOT import route functions
+   - Test views: Test template rendering, form validation, user interactions
+   - Test integration: Test complete MVC flow (View -> Controller -> Model) via test client
+4. If standalone functions exist:
+   - Copy functions into test file OR import from code file
+   - Include ALL necessary imports (re, patch, etc.) that functions use
+   - Call functions directly with test parameters
+   - Test function parameters and return values
+   - If function uses re module, MUST import re in test file
+5. Create unit tests for all functions/methods/routes
+6. Validate that the code meets the SRS requirements listed above (not just syntax testing)
+7. Test that all use cases from SRS are covered by the code
+8. Test the core logic and business rules from SRS
+9. Edge cases and error scenarios
+10. Positive and negative test cases
+11. Mock data and test fixtures created within the test file
+12. Test setup and teardown with proper Flask app context if using Flask
+13. TEST INDEPENDENCE: Each test must be completely independent:
+    - Each test creates its own test data
+    - Each test uses a fresh database (in-memory SQLite)
+    - Tests can run in any order
+    - No shared state between tests
+    - Proper cleanup in fixtures (db.drop_all(), db.session.remove())
+13. CRITICAL: If SRS requires a feature (parameter, field, validation) that is missing from the generated code:
+    - Generate a test that explicitly checks if the feature exists in the code
+    - If the feature is missing, the test should FAIL with a clear message indicating the missing SRS requirement
+    - Use introspection (e.g., inspect.signature() in Python) to verify parameters/fields exist
+    - Example: If SRS requires "DOB" but code doesn't have it, test should fail with "SRS requires DOB but code doesn't implement it"
+    - This ensures tests validate SRS compliance, not just that code runs
+
+FLASK SPECIFIC REQUIREMENTS (with TEST INDEPENDENCE):
+- For Flask routes, ALWAYS use Flask test client (app.test_client())
+- Database operations MUST be within app.app_context() with proper isolation:
+  @pytest.fixture
+  def client():
+      app.config['TESTING'] = True
+      app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'  # Fresh in-memory DB for EACH test
+      app.config['SECRET_KEY'] = 'test-secret-key'  # Required for sessions
+      app.config['WTF_CSRF_ENABLED'] = False  # Disable CSRF for testing
+      with app.app_context():
+          db.create_all()  # Create tables
+          yield app.test_client()
+          db.session.remove()  # Clean up session
+          db.drop_all()  # CRITICAL: Drop all tables to ensure test independence
+  
+  @pytest.fixture
+  def app_context():
+      app.config['TESTING'] = True
+      app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'  # Fresh DB for each test
+      app.config['SECRET_KEY'] = 'test-secret-key'
+      with app.app_context():
+          db.create_all()  # CRITICAL: Must create tables for app_context fixture too
+          yield
+          db.session.remove()  # Clean up session
+          db.drop_all()  # CRITICAL: Drop all tables for test independence
+  
+  CRITICAL TEST INDEPENDENCE RULES:
+  - Each test MUST use a fresh in-memory database (sqlite:///:memory:)
+  - db.drop_all() MUST be called in fixture teardown to ensure no data persists between tests
+  - db.session.remove() MUST be called to clean up database sessions
+  - Each test MUST create its own test data - NEVER assume data exists from other tests
+  - Use unique identifiers in each test (unique usernames, emails, IDs) to avoid conflicts
+  - Example: Use f"testuser_{random.randint(1000, 9999)}" or f"test_{uuid.uuid4().hex[:8]}" for unique test data
+- Test routes, not standalone functions if code uses @app.route
+- CRITICAL: ALWAYS mock Flask-Mail.send() if controller uses mail.send():
+  * For MVC structure: Use @patch('app.mail.send') or @patch('controllers.user_controller.mail.send') (replace user_controller with actual controller name)
+  * For single file: Use @patch('${appFileName}.mail.send')
+  * Match the actual import path in your code
+- If ANY test might trigger email sending, wrap it with: with patch('app.mail.send') as mock_send: (for MVC) or with patch('${appFileName}.mail.send') as mock_send: (for single file)
+- Use client.post() with data parameter for form submissions
+- Use client.get() for GET requests
+- CRITICAL - DATE HANDLING IN TESTS:
+  - When creating User/Model instances DIRECTLY in tests (not through form submission), you MUST use date objects, NOT strings:
+    from datetime import datetime
+    birthdate = datetime.strptime('1990-01-01', '%Y-%m-%d').date()  # Parse string to date object
+    user = User(birthdate=birthdate, ...)  # CORRECT - date object
+    user = User(birthdate='1990-01-01', ...)  # WRONG - will cause TypeError: SQLite Date type only accepts Python date objects
+  - When testing form submissions via client.post(), use strings (form data is always strings):
+    response = client.post('/register', data={'birthdate': '1990-01-01', ...})  # CORRECT - string is fine for form data
+  - CRITICAL: If you see "birthdate='1990-01-01'" in test code when creating User() directly, it's WRONG - must be a date object
+  - Example CORRECT test code:
+    def test_duplicate_username(client):
+        from datetime import datetime
+        birthdate = datetime.strptime('1990-01-01', '%Y-%m-%d').date()  # MUST parse to date
+        user = User(birthdate=birthdate, username='test', email='test@example.com', ...)  # Use date object
+        db.session.add(user)
+        db.session.commit()
+- CRITICAL: Flash messages won't be in response.data on redirects (302)
+  - For redirect responses: Check response.status_code == 302 and response.location
+  - To check flash messages: Use client.get() with follow_redirects=True, OR check session['_flashes']
+  - DO NOT check for flash messages in response.data when status_code is 302
+- CRITICAL: Import ONLY what is defined in the contract:
+  - For Flask routes: DO NOT import route functions (e.g., register, login) - they're not meant to be imported
+  - CORRECT imports for Flask routes: from app import app, db; from models.user import User; from controllers.user_controller import ... (only if controller exports helper functions, NOT route functions)
+  - CORRECT: Test routes via test client: client.post('/register', data={...}) - don't import route functions
+  - Add sys.path manipulation: import sys; import os; sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+  - Import models, db, app, mail, etc. - but NOT route functions decorated with @app.route
+  - If contract defines helper functions (not routes), you can import those: from controllers.user_controller import helper_function
+- CRITICAL: Test ALL routes defined in the contract
+  - Use contract.file_structure.controllers[].routes to see all routes (e.g., /register, /login)
+  - Test ALL routes defined in the contract
+  - Use contract-defined import paths from contract.import_paths
+  - DO NOT import route functions - test them via client.post('/route', ...) or client.get('/route')
+- CRITICAL: File upload testing
+  - ALWAYS use BytesIO for in-memory files - NEVER use open() which requires actual files
+  - CORRECT: from io import BytesIO; from werkzeug.datastructures import FileStorage; test_file = FileStorage(stream=BytesIO(b'fake image content'), filename='test.jpg', content_type='image/jpeg')
+  - CORRECT: response = client.post('/add_product', data={'picture': test_file, 'name': 'Test', ...})
+  - WRONG: open('test.jpg', 'rb') - this requires actual files and causes "read of closed file" errors
+  - WRONG: (open('test.jpg', 'rb'), 'test.jpg') - this tuple format doesn't work with Flask test client
+  - Example CORRECT usage:
+    from io import BytesIO
+    from werkzeug.datastructures import FileStorage
+    test_file = FileStorage(stream=BytesIO(b'fake image content'), filename='test.jpg', content_type='image/jpeg')
+    response = client.post('/add_product', data={'picture': test_file, 'name': 'Test Product', ...})
+
+FEW-SHOT EXAMPLES - Test the ACTUAL MVC components:
+
+#### test_models.py
+import pytest
+from unittest.mock import patch, Mock
+from models.user import User
+
+class TestUser:
+    def test_user_creation(self):
+        # Test the ACTUAL User model from models/user.py
+        user = User(username="testuser", email="test@example.com", password_hash="hash")
+        assert user.username == "testuser"
+        assert user.email == "test@example.com"
+        # Note: id will be None until saved to database (this is correct)
+    
+    def test_password_hashing(self):
+        # Test the ACTUAL set_password and check_password methods
+        user = User(username="test", email="test@example.com", password_hash="")
+        user.set_password("password123")
+        assert user.check_password("password123") == True
+        assert user.check_password("wrongpassword") == False
+    
+    def test_sqlalchemy_query_methods(self):
+        # Test the ACTUAL SQLAlchemy query methods used in controllers
+        with patch('models.user.db') as mock_db:
+            mock_query = Mock()
+            mock_filter = Mock()
+            mock_db.session.query.return_value = mock_query
+            mock_query.filter.return_value = mock_filter
+            mock_filter.first.return_value = None
+            
+            # Test the exact query pattern from user_controller.py
+            user = User.query.filter(
+                (User.username == "testuser") | (User.email == "testuser")
+            ).first()
+            assert user is None
+
+#### test_controllers.py
+import pytest
+from unittest.mock import Mock, patch
+from app import app, db
+from models.user import User
+
+@pytest.fixture
+def client():
+    app.config['TESTING'] = True
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+    with app.app_context():
+        db.create_all()
+        yield app.test_client()
+        db.drop_all()
+
+def test_login_route_success(client):
+    # Test the ACTUAL /login route from controllers/user_controller.py via test client
+    # DO NOT import the route function - test the route directly
+    with app.test_request_context('/login', method='POST', data={
+        'username_or_email': 'testuser',
+        'password': 'password123'
+    }):
+        with patch('controllers.user_controller.User') as mock_user_class:
+            # Mock the SQLAlchemy query chain properly
+            mock_user = Mock()
+            mock_user.check_password.return_value = True
+            mock_query = Mock()
+            mock_filter = Mock()
+            mock_user_class.query = mock_query
+            mock_query.filter.return_value = mock_filter
+            mock_filter.first.return_value = mock_user
+            
+            with patch('controllers.user_controller.redirect') as mock_redirect:
+                result = login_user()
+                # Should redirect to home on success
+                mock_redirect.assert_called_once()
+                assert mock_redirect.call_args[0][0] == 'home'
+
+def test_login_user_invalid_credentials(app):
+    # Test invalid credentials case
+    with app.test_request_context('/login', method='POST', data={
+        'username_or_email': 'testuser',
+        'password': 'wrongpassword'
+    }):
+        with patch('controllers.user_controller.User') as mock_user_class:
+            # Mock query to return None (user not found)
+            mock_query = Mock()
+            mock_filter = Mock()
+            mock_user_class.query = mock_query
+            mock_query.filter.return_value = mock_filter
+            mock_filter.first.return_value = None
+            
+            with patch('controllers.user_controller.redirect') as mock_redirect:
+                with patch('controllers.user_controller.flash') as mock_flash:
+                    result = login_user()
+                    # Should flash error message and redirect back to login
+                    mock_flash.assert_called_once_with('Invalid username or password')
+                    mock_redirect.assert_called_once()
+
+#### test_views.py
+import pytest
+from flask import Flask
+from views.user_views import user_views
+
+@pytest.fixture
+def app():
+    app = Flask(__name__)
+    app.register_blueprint(user_views)
+    app.config['TESTING'] = True
+    app.config['SECRET_KEY'] = 'test'
+    return app
+
+@pytest.fixture
+def client(app):
+    return app.test_client()
+
+def test_login_page_renders(client):
+    # Test the ACTUAL login view from views/user_views.py
+    response = client.get('/login')
+    assert response.status_code == 200
+    assert b'Login' in response.data
+    assert b'username_or_email' in response.data  # Note: actual field name
+    assert b'password' in response.data
+
+def test_login_form_submission_get(client):
+    # Test GET request to login page
+    response = client.get('/login')
+    assert response.status_code == 200
+    assert b'form' in response.data.lower()
+
+def test_login_form_submission_post(client):
+    # Test POST request to login page (calls controller)
+    with patch('views.user_views.login_user') as mock_login:
+        mock_login.return_value = None  # Controller handles redirect
+        
+        response = client.post('/login', data={
+            'username_or_email': 'testuser',
+            'password': 'password123'
+        })
+        # Should call the controller function
+        mock_login.assert_called_once()
+
+#### test_integration.py
+import pytest
+from flask import Flask
+from unittest.mock import patch, Mock
+
+@pytest.fixture
+def app():
+    app = Flask(__name__)
+    # Register the actual blueprint from views/user_views.py
+    from views.user_views import user_views
+    app.register_blueprint(user_views)
+    app.config['TESTING'] = True
+    app.config['SECRET_KEY'] = 'test'
+    return app
+
+@pytest.fixture
+def client(app):
+    return app.test_client()
+
+def test_full_login_flow_success(client):
+    # Test the COMPLETE MVC flow: View -> Controller -> Model
+    with patch('controllers.user_controller.User') as mock_user_class:
+        # Mock the SQLAlchemy query chain
+        mock_user = Mock()
+        mock_user.check_password.return_value = True
+        mock_query = Mock()
+        mock_filter = Mock()
+        mock_user_class.query = mock_query
+        mock_query.filter.return_value = mock_filter
+        mock_filter.first.return_value = mock_user
+        
+        with patch('controllers.user_controller.redirect') as mock_redirect:
+            # Test complete flow through the view
+            response = client.post('/login', data={
+                'username_or_email': 'testuser',
+                'password': 'password123'
+            })
+            # Should redirect on success
+            mock_redirect.assert_called_once()
+
+def test_full_login_flow_failure(client):
+    # Test complete flow with invalid credentials
+    with patch('controllers.user_controller.User') as mock_user_class:
+        # Mock query to return None
+        mock_query = Mock()
+        mock_filter = Mock()
+        mock_user_class.query = mock_query
+        mock_query.filter.return_value = mock_filter
+        mock_filter.first.return_value = None
+        
+        with patch('controllers.user_controller.redirect') as mock_redirect:
+            with patch('controllers.user_controller.flash') as mock_flash:
+                response = client.post('/login', data={
+                    'username_or_email': 'testuser',
+                    'password': 'wrongpassword'
+                })
+                # Should flash error and redirect
+                mock_flash.assert_called_once_with('Invalid username or password')
+                mock_redirect.assert_called_once()
+
+PYTHON FLASK TEST EXAMPLE STRUCTURE:
+\`\`\`python
+import pytest
+import sys
+import os
+import re  # ALWAYS import re if using regex
+from unittest.mock import patch, MagicMock
+from werkzeug.datastructures import FileStorage
+from io import BytesIO
+# CRITICAL: Add parent directory to path to import code - NEVER duplicate code
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# For MVC structure:
+from app import app, db, mail
+from models.user import User
+# OR for single file structure:
+# from ${appFileName} import app, db, User, mail
+
+@pytest.fixture
+def client():
+    app.config['TESTING'] = True
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+    app.config['SECRET_KEY'] = 'test-secret-key'  # Required for sessions
+    with app.app_context():
+        db.create_all()
+        # Create test user if needed for authentication
+        # CRITICAL: If User model has date fields, MUST use date objects, NOT strings
+        from datetime import datetime
+        birthdate = datetime.strptime('1990-01-01', '%Y-%m-%d').date()  # Parse to date object
+        test_user = User(username='testuser', email='test@example.com', birthdate=birthdate, ...)  # Use date object
+        test_user.set_password('testpass')  # Use set_password method if available
+        db.session.add(test_user)
+        db.session.commit()
+        yield app.test_client()
+        db.drop_all()
+
+@pytest.fixture
+def app_context():
+    app.config['TESTING'] = True
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+    app.config['SECRET_KEY'] = 'test-secret-key'
+    with app.app_context():
+        db.create_all()  # CRITICAL: Must create tables for app_context fixture too
+        yield
+        db.session.remove()
+        db.drop_all()
+
+@pytest.fixture
+def app_context():
+    app.config['TESTING'] = True
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+    app.config['SECRET_KEY'] = 'test-secret-key'
+    with app.app_context():
+        db.create_all()  # CRITICAL: Must create tables for app_context fixture too
+        yield
+        db.session.remove()
+        db.drop_all()
+
+def test_register_route(client):
+    # CRITICAL: ALWAYS mock mail.send() if controller uses mail - prevents network errors
+    with patch('app.mail.send') as mock_send:  # For MVC structure; use '${appFileName}.mail.send' for single file
+        response = client.post('/register', data={
+            'first_name': 'John',
+            'last_name': 'Doe',
+            # ... other fields
+        })
+        # For redirects (302), check status and location, NOT response.data
+        assert response.status_code == 302
+        assert '/login' in response.location  # Check redirect location
+        
+        # To check flash messages on redirect, follow redirect:
+        response = client.post('/register', data={...}, follow_redirects=True)
+        assert response.status_code == 200
+        assert b'success message' in response.data  # Now can check flash
+        # Verify email was sent (optional)
+        mock_send.assert_called_once()
+
+def test_add_product_with_file_upload(client):
+    # CORRECT file upload using BytesIO - NEVER use open()
+    test_file = FileStorage(
+        stream=BytesIO(b'fake image content'),
+        filename='test.jpg',
+        content_type='image/jpeg'
+    )
+    # Login first if route requires authentication
+    client.post('/login', data={'username': 'testuser', 'password': 'testpass'})
+    # Now test the route
+    response = client.post('/add_product', data={
+        'picture': test_file,
+        'name': 'Test Product',
+        'category': 'Electronics',
+        # ... other fields
+    })
+    assert response.status_code == 201
+
+def test_add_product_with_login_required(client):
+    # If route has @login_required but no login route exists, mock current_user
+    with patch('app.current_user', MagicMock(username='testuser', id=1)):  # For MVC structure; use '${appFileName}.current_user' for single file
+        test_file = FileStorage(stream=BytesIO(b'fake image'), filename='test.jpg')
+        response = client.post('/add_product', data={'picture': test_file, 'name': 'Test', ...})
+        assert response.status_code == 201
+
+def test_register_missing_fields(client):
+    response = client.post('/register', data={...})  # Missing required fields
+    assert response.status_code == 200  # Not redirect when validation fails
+    assert b'Please fill all required fields' in response.data  # Flash visible on same page
+
+def test_register_duplicate_username(client):
+    # Create existing user first
+    # CRITICAL: If User model has date fields (birthdate, date_of_birth, etc.), MUST use date objects, NOT strings
+    from datetime import datetime
+    birthdate = datetime.strptime('1990-01-01', '%Y-%m-%d').date()  # Parse string to date object
+    existing_user = User(username='testuser', email='existing@example.com', birthdate=birthdate, ...)  # Use date object
+    db.session.add(existing_user)
+    db.session.commit()
+    
+    # Try to register with same username
+    with patch('${appFileName}.mail.send'):  # Mock email
+        response = client.post('/register', data={
+            'username': 'testuser',  # Duplicate
+            'email': 'new@example.com',
+            ...
+        }, follow_redirects=True)
+        # Controller should handle IntegrityError and return error message
+        assert response.status_code == 200  # Or 400 if controller returns 400
+        assert b'Username already taken' in response.data or b'already exists' in response.data
+\`\`\`
+
+CRITICAL FLASH MESSAGE TESTING:
+- Redirect responses (302): Flash messages are NOT in response.data - they're stored in session
+- Non-redirect responses (200): Flash messages ARE in response.data (rendered on page)
+- To test flash on redirect, use ONE of these methods:
+  1. Use follow_redirects=True: response = client.post('/route', data={...}, follow_redirects=True); assert b'message' in response.data
+  2. Check session: with client.session_transaction() as sess: flashes = sess.get('_flashes', []); assert any('success' in str(msg) for msg in flashes)
+  3. Check redirect location only: assert response.status_code == 302; assert '/login' in response.location
+- DO NOT check response.data for flash messages when status_code is 302 - it will always fail
+- For validation errors that render same page (200): Flash messages ARE in response.data
+
+CRITICAL IMPORT REQUIREMENTS:
+- The app file is named: ${appFileName}${fileExtension} (from contract)
+- For Python tests in tests/ subdirectory: MUST add sys.path manipulation:
+  import sys
+  import os
+  sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+- ALWAYS include these imports if needed:
+  - import re (if using regex patterns)
+  - from unittest.mock import patch, MagicMock (if using mocks)
+  - from werkzeug.datastructures import FileStorage (if testing file uploads)
+  - from io import BytesIO (if creating in-memory files)
+- CRITICAL: Use contract.import_paths to determine import structure:
+  * The contract.import_paths contains ACTUAL import paths based on functionality-based file names
+  * Models: Use ${contract.import_paths?.models || 'from models.{model_name} import {ModelName}'}
+    - If contract.import_paths.models_all exists, use ALL model imports listed there
+    - Example: ${contract.import_paths?.models_all?.join('\n    - ') || contract.import_paths?.models || 'from models.{model_name} import {ModelName}'}
+  * Controllers: Use ${contract.import_paths?.controllers || 'from controllers.{controller_name} import {blueprint_name}'}
+    - Helper functions: ${contract.import_paths?.helper_functions || 'from controllers.{controller_name} import {helper_function_names}'}
+  * Views: Use ${contract.import_paths?.views || 'from views.{view_name} import {function_names}'}
+  * App: Use ${contract.import_paths?.app || 'from app import app, db, mail'}
+- DO NOT use placeholder names - use the EXACT import paths from contract.import_paths
+- The import paths already include functionality-based naming (e.g., models.product_search_product, controllers.product_search_controller)
+
+CRITICAL - SHARED MODEL IMPORTS (MANDATORY - PREVENTS TABLE COLLISIONS):
+- CERTAIN models are SHARED across functionalities and MUST use shared import paths:
+  * User model: ALWAYS import from "models.user" (NOT "models.{functionality}_user")
+    - CORRECT: from models.user import User
+    - WRONG: from models.user_registration_user import User
+    - WRONG: from models.add_product_user import User
+    - WRONG: from models.view_profile_user import User
+  * Product model: ALWAYS import from "models.product" (NOT "models.{functionality}_product")
+    - CORRECT: from models.product import Product
+    - WRONG: from models.product_search_product import Product
+  * Category model: ALWAYS import from "models.category" (NOT "models.{functionality}_category")
+    - CORRECT: from models.category import Category
+    - WRONG: from models.product_search_category import Category
+- Check the contract's model file_path:
+  * If file_path is "models/user.py" → Use: from models.user import User
+  * If file_path is "models/product.py" → Use: from models.product import Product
+  * If file_path is "models/category.py" → Use: from models.category import Category
+  * If file_path is "models/{functionality}_user.py" → This is WRONG, use shared path instead
+- Shared models use the same table name across functionalities (e.g., 'users', 'products', 'categories')
+- DO NOT import from functionality-specific User/Product/Category model paths - they will cause SQLAlchemy table collision errors
+- If the contract specifies a shared model (User, Product, Category), ALWAYS use the shared import path regardless of what contract.import_paths says
+- Override contract.import_paths for shared models: Always use shared paths (models.user, models.product, models.category)
+
+- If code uses Flask routes (@app.route), routes are NOT importable - test via client.post('/route')
+- If code has standalone helper functions (not routes), you can import those
+- Match exact imports to contract.import_paths defined in the contract above
+- CRITICAL: If test uses re.match(), re.search(), or any regex - MUST import re
+- CRITICAL: If test uses @patch or patch() - MUST import from unittest.mock
+
+CRITICAL SYNTAX REQUIREMENTS:
+
+F-STRING RESTRICTIONS (CRITICAL):
+- NEVER use backslashes (\) inside f-string expressions
+- WRONG: f"user{re.sub(r'\\W+', '', num)}"  # SyntaxError: f-string expression part cannot include a backslash
+- CORRECT: cleaned = re.sub(r'\\W+', '', num); f"user{cleaned}"
+- CORRECT: pattern = r'\\W+'; cleaned = re.sub(pattern, '', num); f"user{cleaned}"
+- If you need regex in f-strings, extract the result to a variable FIRST, then use the variable in the f-string
+- Example: username_clean = re.sub(r'[^a-zA-Z0-9]', '', num); email = f"{username_clean}@ex.com"
+- Return ONLY valid ${language} code
+- NO explanatory text outside of comments
+- NO notes, documentation, or instructions in the code
+- NO "Note:", "This test", "The test", "Test file", "Important:", "Remember:" text
+- NO "This assumes", "The code assumes", "This test code assumes" text
+- NO "Here is", "Here are", "The tests are", "The test code is", "The following" text
+- NO plain English sentences before the code starts
+- NO HTML comments (<!-- -->) - these are invalid in Python
+- Start the response DIRECTLY with import statements or code
+- DO NOT write "Here is the test code" or similar introductions
+- ALL text must be valid ${language} syntax
+- The FIRST line must be valid ${language} code (import, def, class, etc.)
+
+JAVA TEST EXAMPLE STRUCTURE:
+\`\`\`java
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class FunctionalityNameTest {
+    @Test
+    public void testMethodName() {
+        // Test implementation
+        assertEquals(expected, actual);
+    }
+}
+\`\`\`
+
+CRITICAL JAVA NAMING REQUIREMENT:
+- The public class name MUST match the filename exactly
+${expectedClassName ? `- FOR THIS FILE: Use exactly "public class ${expectedClassName}"` : ''}
+- Use proper ${language} comment syntax (# for Python, // for JavaScript, etc.)
+- NO plain text explanations mixed with code
+- NO standalone explanatory sentences
+- NO documentation outside of proper comment blocks
+
+IMPORTANT: 
+- For Flask routes: Import the app and test routes (do NOT copy route functions)
+- For MVC: Import from models/, views/, controllers/ directories
+- For standalone functions: Copy functions into test file OR import properly
+- Make the test file completely self-contained and runnable
+- Match the ACTUAL code structure (routes vs functions vs MVC layers)
+- Return ONLY executable ${language} code
+
+Use ${testFramework} framework for ${language} testing. Return ONLY the test code, no explanations.
+
+Test file should be named: ${functionalityName.toLowerCase().replace(/[^a-zA-Z0-9]/g, '_')}${fileExtension}
+           

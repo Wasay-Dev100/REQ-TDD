@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pending Event Requests</title>
+</head>
+<body>
+    <h1>Pending Event Requests</h1>
+    <ul>
+        {% for proposal in proposals %}
+        <li>
+            <a href="{{ url_for('approving_event_proposals.review_event_request', proposal_id=proposal.id) }}">{{ proposal.title }}</a>
+        </li>
+        {% else %}
+        <li>No pending proposals.</li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('approving_event_proposals.manage_home') }}">Back to Manage Home</a>
+</body>
+</html>

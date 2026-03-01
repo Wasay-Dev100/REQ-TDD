@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pending Events</title>
+</head>
+<body>
+    <h1>Pending Events for Approval</h1>
+    <ul>
+        {% for event in events %}
+        <li>
+            <h2>{{ event.title }}</h2>
+            <p>{{ event.description }}</p>
+            <p>Status: {{ event.status }}</p>
+            <form action="/approvals/events/{{ event.id }}/approve" method="post">
+                <button type="submit">Approve</button>
+            </form>
+            <form action="/approvals/events/{{ event.id }}/decline" method="post">
+                <input type="text" name="reason" placeholder="Reason for decline">
+                <button type="submit">Decline</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

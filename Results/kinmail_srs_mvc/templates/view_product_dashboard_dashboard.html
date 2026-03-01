@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Dashboard</title>
+</head>
+<body>
+    <h1>Product Dashboard</h1>
+    <h2>Summary</h2>
+    <ul>
+        <li>Products for Sale: {{ summary.counts.products_for_sale }}</li>
+        <li>Buy Requests Made: {{ summary.counts.buy_requests_made }}</li>
+        <li>Offers Received: {{ summary.counts.offers_received }}</li>
+    </ul>
+    <h2>Products for Sale</h2>
+    <ul>
+        {% for product in summary.lists.products_for_sale %}
+            <li>{{ product.title }} - {{ product.status }} - {{ product.created_at }}</li>
+        {% endfor %}
+    </ul>
+    <h2>Buy Requests Made</h2>
+    <ul>
+        {% for request in summary.lists.buy_requests_made %}
+            <li>{{ request.product_title }} - {{ request.status }} - {{ request.created_at }}</li>
+        {% endfor %}
+    </ul>
+    <h2>Offers Received</h2>
+    <ul>
+        {% for offer in summary.lists.offers_received %}
+            <li>{{ offer.product_title }} - {{ offer.price_cents }} cents - {{ offer.status }} - {{ offer.created_at }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Home</title>
+</head>
+<body>
+    <h1>Welcome, {{ user.username }}</h1>
+    <a href="{{ url_for('approving_event_proposals.list_pending_event_requests') }}">Pending Event Requests</a>
+    <form action="{{ url_for('approving_event_proposals.logout') }}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+</body>
+</html>
