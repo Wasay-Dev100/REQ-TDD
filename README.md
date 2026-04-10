@@ -1,6 +1,6 @@
-# FR2TDD: Functional Requirements to Test-Driven Development
+# REQ-TDD: Requirement-Guided Test-Driven Development
 
-This repository contains the reproducibility package for the FR2TDD project, which aims to automate the generation of code and tests directly from Software Requirements Specifications (SRS) documents. The project leverages Large Language Models (LLMs) to transform high-level requirements into executable MVC (Model-View-Controller) structured code and corresponding test cases, following a Test-Driven Development (TDD) approach. For venue, citation, and PDF, see the associated conference paper.
+This repository contains the reproducibility package for the **REQ-TDD** project, which aims to automate the generation of code and tests directly from Software Requirements Specifications (SRS) documents. The project leverages Large Language Models (LLMs) to transform high-level requirements into executable MVC (Model-View-Controller) structured code and corresponding test cases, following a Test-Driven Development (TDD) approach. For venue, citation, and PDF, see the associated conference paper.
 
 **PDF:** *(link to paper when available)*
 
@@ -8,7 +8,10 @@ This repository contains the reproducibility package for the FR2TDD project, whi
 
 ## Authors
 
-*(Add names, affiliations, and emails as in the camera-ready paper.)*
+- **Wasay Mohammed Abdul** — Texas State University, San Marcos, TX, USA — [w_m91@txstate.edu](mailto:w_m91@txstate.edu)
+- **Ragib Shahariar Ayon** — Texas State University, San Marcos, TX, USA — [ipd21@txstate.edu](mailto:ipd21@txstate.edu)
+- **Shibbir Ahmed** — Texas State University, San Marcos, TX, USA — [shibbir@txstate.edu](mailto:shibbir@txstate.edu)
+- **Rodion Podorozhny** — Texas State University, San Marcos, TX, USA — [rp31@txstate.edu](mailto:rp31@txstate.edu)
 
 ---
 
@@ -25,7 +28,7 @@ This repository contains the reproducibility package for the FR2TDD project, whi
 
 This reproducibility package provides the datasets, prompts, and results used in our experiments.
 
-The FR2TDD system is designed as a VS Code extension that takes an SRS document as input and performs the following steps:
+The REQ-TDD system is designed as a VS Code extension that takes an SRS document as input and performs the following steps:
 
 1. **SRS Parsing:** Extracts functional requirements and use cases from the SRS document.
 2. **Contract Generation:** Creates a detailed API contract/specification based on the extracted functionalities.
@@ -46,8 +49,8 @@ Follow these steps to clone the repository and inspect or reproduce artifacts.
 **1. Clone this repository and move to the directory** (terminal, bash, or PowerShell):
 
 ```bash
-git clone https://github.com/SrstoCode/fr2tdd.git
-cd fr2tdd
+git clone https://github.com/Wasay-Dev100/Requirement-Guided-Test-Driven-Development-for-Modular-Code-Generation-with-Large-Language-Model.git req-tdd
+cd req-tdd
 ```
 
 **2. View generated outputs and inputs**
@@ -80,7 +83,7 @@ cd fr2tdd
 
 ## How to use (for reproducibility)
 
-1. Clone this repository: `git clone https://github.com/SrstoCode/fr2tdd.git`
+1. Clone this repository: `git clone https://github.com/Wasay-Dev100/Requirement-Guided-Test-Driven-Development-for-Modular-Code-Generation-with-Large-Language-Model.git req-tdd`
 2. Navigate to the `Results` directory to view the generated code and tests.
 3. Refer to the `Datasets` and `Prompts` folders to understand the inputs used for generation.
 
