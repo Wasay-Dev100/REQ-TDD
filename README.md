@@ -1,4 +1,4 @@
-# REQ-TDD: Requirement-Guided Test-Driven Development
+# REQ-TDD:Requirement-Guided Test-Driven Development for Modular Code Generation with Large Language Model
 
 This repository contains the reproducibility package for the **REQ-TDD** project, which aims to automate the generation of code and tests directly from Software Requirements Specifications (SRS) documents. The project leverages Large Language Models (LLMs) to transform high-level requirements into executable MVC (Model-View-Controller) structured code and corresponding test cases, following a Test-Driven Development (TDD) approach. For venue, citation, and PDF, see the associated conference paper.
 
