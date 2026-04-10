@@ -4,10 +4,10 @@ This repository contains the reproducibility package for the **REQ-TDD** project
 
 ## Authors
 
-- **Wasay Mohammed Abdul** — Texas State University, San Marcos, TX, USA — [w_m91@txstate.edu](mailto:w_m91@txstate.edu)
-- **Ragib Shahariar Ayon** — Texas State University, San Marcos, TX, USA — [ipd21@txstate.edu](mailto:ipd21@txstate.edu)
-- **Shibbir Ahmed** — Texas State University, San Marcos, TX, USA — [shibbir@txstate.edu](mailto:shibbir@txstate.edu)
-- **Rodion Podorozhny** — Texas State University, San Marcos, TX, USA — [rp31@txstate.edu](mailto:rp31@txstate.edu)
+- **Wasay Mohammed Abdul** — Texas State University — [w_m91@txstate.edu](mailto:w_m91@txstate.edu)
+- **Ragib Shahariar Ayon** — Texas State University — [ipd21@txstate.edu](mailto:ipd21@txstate.edu)
+- **Shibbir Ahmed** — Texas State University — [shibbir@txstate.edu](mailto:shibbir@txstate.edu)
+- **Rodion Podorozhny** — Texas State University — [rp31@txstate.edu](mailto:rp31@txstate.edu)
 
 ---
 
