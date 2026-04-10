@@ -1,13 +1,15 @@
-# REQ-TDD:Requirement-Guided Test-Driven Development for Modular Code Generation with Large Language Model
+# REQ-TDD: Requirement-Guided Test-Driven Development for Modular Code Generation with Large Language Model
 
-This repository contains the reproducibility package for the **REQ-TDD** project, which aims to automate the generation of code and tests directly from Software Requirements Specifications (SRS) documents. The project leverages Large Language Models (LLMs) to transform high-level requirements into executable MVC (Model-View-Controller) structured code and corresponding test cases, following a Test-Driven Development (TDD) approach. For venue, citation, and PDF, see the associated conference paper.
+This repository contains the reproducibility package for the **REQ-TDD** project, which aims to automate the generation of code and tests directly from Software Requirements Specifications (SRS) documents. The project leverages Large Language Models (LLMs) to transform high-level requirements into executable MVC (Model-View-Controller) structured code and corresponding test cases, following a Test-Driven Development (TDD) approach.
+
+**DOI:** [https://doi.org/10.1145/3803437.3807385](https://doi.org/10.1145/3803437.3807385)
 
 ## Authors
 
-- **Wasay Mohammed Abdul** — Texas State University — [w_m91@txstate.edu](mailto:w_m91@txstate.edu)
-- **Ragib Shahariar Ayon** — Texas State University — [ipd21@txstate.edu](mailto:ipd21@txstate.edu)
-- **Shibbir Ahmed** — Texas State University — [shibbir@txstate.edu](mailto:shibbir@txstate.edu)
-- **Rodion Podorozhny** — Texas State University — [rp31@txstate.edu](mailto:rp31@txstate.edu)
+- **Wasay Mohammed Abdul** — Texas State University, San Marcos, TX, USA — [w_m91@txstate.edu](mailto:w_m91@txstate.edu)
+- **Ragib Shahariar Ayon** — Texas State University, San Marcos, TX, USA — [ipd21@txstate.edu](mailto:ipd21@txstate.edu)
+- **Shibbir Ahmed** — Texas State University, San Marcos, TX, USA — [shibbir@txstate.edu](mailto:shibbir@txstate.edu)
+- **Rodion Podorozhny** — Texas State University, San Marcos, TX, USA — [rp31@txstate.edu](mailto:rp31@txstate.edu)
 
 ---
 
@@ -17,6 +19,7 @@ This repository contains the reproducibility package for the **REQ-TDD** project
 - [Installation and reproducibility instructions](#installation-and-reproducibility-instructions)
 - [Repository structure](#repository-structure)
 - [How to use](#how-to-use-for-reproducibility)
+- [Associated publication](#associated-publication)
 
 ---
 
@@ -32,7 +35,7 @@ The REQ-TDD system is designed as a VS Code extension that takes an SRS document
 4. **Code Generation:** Generates MVC-structured code (e.g., Flask for Python) that aims to pass the generated tests.
 5. **Feedback Loop:** Iteratively refines the generated code based on test failures until all tests pass.
 
-For more details on the methodology and experimental setup, please refer to the associated conference paper.
+For more details on the methodology and experimental setup, see the [Associated publication](#associated-publication) at the end of this README.
 
 ---
 
@@ -83,4 +86,12 @@ cd req-tdd
 2. Navigate to the `Results` directory to view the generated code and tests.
 3. Refer to the `Datasets` and `Prompts` folders to understand the inputs used for generation.
 
-For more details on the methodology and experimental setup, please refer to the associated conference paper.
+For more details on the methodology and experimental setup, see the [Associated publication](#associated-publication) at the end of this README.
+
+---
+
+## Associated publication
+
+For more details on the methodology and experimental setup, please refer to the associated conference paper:
+
+Wasay Mohammed Abdul, Ragib Shahariar Ayon, Shibbir Ahmed, and Rodion Podorozhny. 2026. *Requirement-Guided Test-Driven Development for Modular Code Generation with Large Language Model.* In *34th ACM Joint European Software Engineering Conference and Symposium on the Foundations of Software Engineering (FSE Companion ’26)*, July 5–9, 2026, Montreal, QC, Canada. ACM, New York, NY, USA, 2 pages. [https://doi.org/10.1145/3803437.3807385](https://doi.org/10.1145/3803437.3807385)
