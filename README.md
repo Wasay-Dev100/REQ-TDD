@@ -93,5 +93,17 @@ For more details on the methodology and experimental setup, see the [Associated 
 ## Associated publication
 
 For more details on the methodology and experimental setup, please refer to the associated conference paper:
-
-Wasay Mohammed Abdul, Ragib Shahariar Ayon, Shibbir Ahmed, and Rodion Podorozhny. 2026. *Requirement-Guided Test-Driven Development for Modular Code Generation with Large Language Model.* In *34th ACM Joint European Software Engineering Conference and Symposium on the Foundations of Software Engineering (FSE Companion ’26)*, July 5–9, 2026, Montreal, QC, Canada. ACM, New York, NY, USA, 2 pages. [https://doi.org/10.1145/3803437.3807385](https://doi.org/10.1145/3803437.3807385)
+```bibtex
+@inproceedings{abdul2026requirement,
+  author    = {Wasay Mohammed Abdul and Ragib Shahariar Ayon and Shibbir Ahmed and Rodion Podorozhny},
+  title     = {Requirement-Guided Test-Driven Development for Modular Code Generation with Large Language Model},
+  booktitle = {Proceedings of the 34th ACM Joint European Software Engineering Conference and Symposium on the Foundations of Software Engineering (FSE Companion '26)},
+  year      = {2026},
+  location  = {Montreal, QC, Canada},
+  publisher = {ACM},
+  address   = {New York, NY, USA},
+  pages     = {1--2},
+  doi       = {10.1145/3803437.3807385},
+  url       = {https://doi.org/10.1145/3803437.3807385}
+}
+```
